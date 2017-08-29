@@ -1,0 +1,170 @@
+'use strict';
+
+// --------------------------------------------------数据加密
+var sha1 = require('sha1');
+exports.sha = function(obj) {
+  var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
+  return sha1(str);
+}
+
+// --------------------------------------------------xml转化为对象
+var Promise = require('bluebird');
+var xml2js = require('xml2js');
+exports.xml2js = function(xml) {
+  return new Promise(function(resolve, reject) {
+    xml2js.parseString(xml, {
+      trim: true
+    }, function(err, result) {
+      resolve(result);
+    });
+  });
+};
+
+// --------------------------------------------------格式化对象
+function format_data(obj) {
+  var msg = null;
+  // 对象
+  if (typeof obj == 'object' && obj.length == undefined) {
+    msg = {};
+    for (var k in obj) {
+      msg[k] = format_data(obj[k])
+    }
+  }
+  // 数组--一个元素就是就给出了
+  else if (obj instanceof Array && obj.length == 1) {
+    msg = format_data(obj[0]);
+  }
+  // 数组--多个元素
+  else if (obj instanceof Array && obj.length == 1) {
+    msg = [];
+    for (var i = 0; i < obj.length; i++) {
+      msg.push(format_data(obj[i]));
+    }
+  }
+  // 元素
+  else {
+    msg = obj;
+  }
+  return msg;
+}
+exports.format_data = format_data;
+
+
+
+// --------------------------------------------------回复数据的设置
+var Core = require('./core/index.js');
+var Core_async = require('./core_async/index.js');
+
+exports.data_to_echo = function*(data) {
+  // 预回复数据初始化
+  var echo = {
+    ToUserName: data.FromUserName,
+    FromUserName: data.ToUserName,
+    CreateTime: null,
+  };
+  // 本地预设数据
+  var _local = require('./config.js').wx.local;
+  // 永久素材-other
+  var _other = require('./config.js').net.permanent.arr_other;
+  // 来的-data.MsgType-数据类型--event--text
+  var cinfo = data.Event || data.Content;
+
+  // 本地数据存在--同步读取寻找预设数据
+  if (_local.indexOf(cinfo) != -1) {
+    new Core().init(_local.indexOf(cinfo), echo, 'local');
+  }
+  // 永久-other
+  else if (_other.indexOf(cinfo) != -1) {
+    new Core().init(_other.indexOf(cinfo), echo, 'other');
+  }
+  // 永久-news
+
+  // 临时--需要在异步中找
+  else {
+    echo = yield new Core_async().init(cinfo, echo);
+  }
+  return echo;
+};
+
+
+// --------------------------------------------------回复的模板
+exports.tpl = function(data) {
+  // 头部
+  var header = `
+  <xml>
+  <ToUserName><![CDATA[${data.ToUserName}]]></ToUserName>
+  <FromUserName><![CDATA[${data.FromUserName}]]></FromUserName>
+  <CreateTime>${data.CreateTime}</CreateTime>
+  <MsgType><![CDATA[${data.MsgType}]]></MsgType>
+  `;
+
+  // 身体
+  var body = '';
+  // 文本
+  if (data.MsgType == 'text') {
+    body = `<Content><![CDATA[${data.Content}]]></Content>`;
+  }
+  // 图片
+  else if (data.MsgType == 'image') {
+    body = `
+    <Image>
+    <MediaId><![CDATA[${data.MediaId}]]></MediaId>
+    </Image>
+    `;
+  }
+  // 语音
+  else if (data.MsgType == 'voice') {
+    body = `
+    <Voice>
+    <MediaId><![CDATA[${data.MediaId}]]></MediaId>
+    </Voice>
+    `;
+  }
+  // 视频
+  else if (data.MsgType == 'video') {
+    body = `
+    <Video>
+    <MediaId><![CDATA[${data.MediaId}]]></MediaId>
+    <Title><![CDATA[${data.Title}]]></Title>
+    <Description><![CDATA[${data.Description}]]></Description>
+    </Video>
+    `;
+  }
+  // 音乐
+  else if (data.MsgType == 'music') {
+    body = `
+    <Music>
+    <Title><![CDATA[${data.Title}]]></Title>
+    <Description><![CDATA[${data.Description}]]></Description>
+    <MusicUrl><![CDATA[${data.MusicUrl}]]></MusicUrl>
+    <HQMusicUrl><![CDATA[${data.HQMusicUrl}]]></HQMusicUrl>
+    <ThumbMediaId><![CDATA[${data.ThumbMediaId}]]></ThumbMediaId>
+    </Music>
+    `;
+  }
+  // 图文
+  else if (data.MsgType == 'news') {
+    var item = '';
+    // data.Articles--图文数组
+    data.Articles.forEach(function(ele) {
+      item += `
+     <item>
+     <Title><![CDATA[${ele.Title}]]></Title> 
+     <Description><![CDATA[${ele.Description}]]></Description>
+     <PicUrl><![CDATA[${ele.PicUrl}]]></PicUrl>
+     <Url><![CDATA[${ele.Url}]]></Url>
+     </item>
+     `;
+    })
+
+    body = `
+    <ArticleCount>${data.Articles.length}</ArticleCount>
+    <Articles>
+    ${item}
+    </Articles>
+    `;
+  }
+  // 底部
+  var footer = '</xml>';
+  return `${header}${body}${footer}`
+};
