@@ -73,9 +73,11 @@ Token.prototype = {
   // --------------------------------------------------------票据
   init: function() {
     var me = this;
+    // token初始化
     me.token_init(function() {
+      // 临时素材
       me._temp();
-      // 其他素材
+      // 永久其他素材
       me._perm("other");
       // _ticket
       me._ticket();

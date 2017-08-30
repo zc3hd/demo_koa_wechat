@@ -29,6 +29,10 @@ app.use(staticServer(path.join(__dirname, './webapp')));
 var wx = require('./routes_controllers/wx/route.js');
 app.use( wx.routes(), wx.allowedMethods());
 
+// sdk
+var sdk_init = require('./routes_controllers/sdk_init/route.js');
+app.use( sdk_init.routes(), sdk_init.allowedMethods());
+
 
 
 

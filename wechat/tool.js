@@ -1,15 +1,19 @@
 'use strict';
+var sha1 = require('sha1');
+var Promise = require('bluebird');
+var xml2js = require('xml2js');
+var Core = require('./core/index.js');
+var Core_async = require('./core_async/index.js');
+var conf = require('./config.js');
+
 
 // --------------------------------------------------数据加密
-var sha1 = require('sha1');
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
 }
 
 // --------------------------------------------------xml转化为对象
-var Promise = require('bluebird');
-var xml2js = require('xml2js');
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
     xml2js.parseString(xml, {
@@ -52,9 +56,6 @@ exports.format_data = format_data;
 
 
 // --------------------------------------------------回复数据的设置
-var Core = require('./core/index.js');
-var Core_async = require('./core_async/index.js');
-
 exports.data_to_echo = function*(data) {
   // 预回复数据初始化
   var echo = {
@@ -86,6 +87,22 @@ exports.data_to_echo = function*(data) {
   return echo;
 };
 
+// --------------------------------------------------sdk页面的URL修正
+exports.sdk_url = function(obj, info, echo) {
+  var sdk_arr = conf.wx.sdk_arr;
+  var url_arr = obj.href.split('?');
+  var articles = echo.Articles;
+  // 需要修正路径
+  if (sdk_arr.indexOf(info) != -1) {
+    articles.forEach(function(item, index) {
+      if (item.Url.indexOf(conf.wx.url_key) != -1) {}
+      // 不存在
+      else {
+        item.Url = url_arr[0] + item.Url
+      }
+    });
+  }
+};
 
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {

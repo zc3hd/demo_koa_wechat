@@ -15,7 +15,7 @@ module.exports = {
     expires_in: null,
     // ----------------------------------------------
     // 本地预设的收到的数据
-    local: ['subscribe', '1', '2'],
+    local: ['subscribe', '1', '2', 'dev'],
     // 对应的回复数据
     echo: [
       // "subscribe"
@@ -53,7 +53,23 @@ module.exports = {
       {
         MsgType: 'text',
         Content: '你输入的是2'
-      }
+      },
+      // dev
+      {
+        // 回复--图文
+        MsgType: 'news',
+        Articles: [{
+          Title: 'dev',
+          Description: 'dev',
+          PicUrl: 'http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg',
+          Url: "modules/voice_search/index.html"
+        }, {
+          Title: 'dev',
+          Description: 'dev',
+          PicUrl: 'http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg',
+          Url: "modules/voice_search/index.html"
+        }]
+      },
     ],
     // 默认回复的数据
     echo_default: {
@@ -69,9 +85,15 @@ module.exports = {
         PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
         Url: "https://zc3hd.github.io/"
       }]
-    }
+    },
+    // 需要调用sdk页面的关键字
+    sdk_arr: ['dev'],
+    // 配置域名的关键字
+    url_key:'.me',
+    // 访问的地址
+    url_sdk:'https://arminc.pagekite.me/modules/voice_search/index.html'
   },
-  // 异步
+  // 素材类
   net: {
     // 临时
     temporary: {
@@ -110,7 +132,7 @@ module.exports = {
       add_news_img: 'https://api.weixin.qq.com/cgi-bin/media/uploadimg?',
     }
   },
-  // ticket--access_token=ACCESS_TOKEN&type=jsapi
+  // SDK--ticket
   ticket: {
     // 获取
     url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?',
@@ -120,13 +142,13 @@ module.exports = {
     api_ticket: null,
     // access_token的过期时间
     expires_in: null,
-  }, 
-  // 输出
+  },
+  // 控制台打印
   log: {
     token: 'green',
     temp: 'cyan',
     other: 'magenta',
     news: 'blue',
-    ticket:'bgBlue'
+    ticket: 'bgBlue'
   },
 };

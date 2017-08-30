@@ -8,28 +8,6 @@ var Token = require('../../wechat/token/token.js');
 new Token(conf).init();
 
 // 来自微信服务器初次验证验证配置
-// exports.approve_init = async(ctx, next) => {
-//   var sha = tool.sha({
-//     token: opts.token,
-//     timestamp: ctx.query.timestamp,
-//     nonce: ctx.query.nonce
-//   });
-//   // 加密串和回音
-//   var signature = ctx.query.signature;
-//   // 验证不成功
-//   if (sha != signature) {
-//     ctx.body = "";
-//     console.log('>>配置失败');
-//     return;
-//   }
-//   // 验证成功
-//   else {
-//     ctx.body = ctx.query.echostr + "";
-//     console.log('>>配置成功');
-//   }
-// }
-
-
 function approve(me, cb) {
   var sha = tool.sha({
     token: opts.token,
@@ -49,14 +27,12 @@ function approve(me, cb) {
     cb();
   }
 }
-
 exports.approve_init = function*(next) {
   var me = this;
   approve(me, function() {
     me.body = me.query.echostr + "";
     console.log('>>配置成功');
   });
-
 }
 
 
@@ -93,7 +69,8 @@ exports.approve_echo = function*(next) {
 
     // 给用户回复的信息
     var echo = yield tool.data_to_echo(data);
-    // console.log(echo);
+
+    tool.sdk_url(me,data.Content,echo);
 
     me.status = 200;
     me.type = 'application/xml';
