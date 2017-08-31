@@ -67,10 +67,11 @@ exports.approve_echo = function*(next) {
     // 用户过来的信息再次格式化
     var data = tool.format_data(data_f.xml);
 
+    // console.log(data);
     // 给用户回复的信息
     var echo = yield tool.data_to_echo(data);
 
-    tool.sdk_url(me,data.Content,echo);
+    tool.sdk_url(me, data.Content, echo);
 
     me.status = 200;
     me.type = 'application/xml';

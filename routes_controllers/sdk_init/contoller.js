@@ -1,29 +1,25 @@
 // 票据对象
 var conf = require('../../wechat/config.js');
 var sha1 = require('sha1');
+var Token = require('../../wechat/token/token.js');
 
-function Fn() {
+function Fn(url) {
   var me = this;
+  me.url = url;
 }
 Fn.prototype = {
-  init: function() {
+  init: function*() {
     var me = this;
-    // 有效
-    if (me._valid(conf.ticket.expires_in)) {
-      var noncestr = Math.random().toString(36).substr(2, 15);
-      var timestamp = parseInt(new Date().getTime() / 1000, 10) + '';
-      var signature = me._signature(noncestr, timestamp);
-      return {
-        noncestr: noncestr,
-        timestamp: timestamp,
-        signature: signature,
-        appID:conf.wx.appID
-      }
-    }
+
+    // conf.ticket.expires_in = 1500000000000;
+    
+    // ------------有效
+    if (me._valid(conf.ticket.expires_in)) {}
     // 无效
     else {
-
+      yield new Token(conf).api_ticket_reload();
     }
+    return me._valid_yes();
   },
   // 验证有效性
   _valid: function(expires_in) {
@@ -31,11 +27,26 @@ Fn.prototype = {
     var now = (new Date().getTime());
     // 有效
     if (now < expires_in * 1) {
+      console.log('* api_ticket--本地有效');
       return true;
     }
     // 无效
     else {
+      console.log('* api_ticket--本地无效');
       return false;
+    }
+  },
+  // 有效
+  _valid_yes: function() {
+    var me = this;
+    var noncestr = Math.random().toString(36).substr(2, 15);
+    var timestamp = parseInt(new Date().getTime() / 1000, 10) + '';
+    var signature = me._signature(noncestr, timestamp);
+    return {
+      noncestr: noncestr,
+      timestamp: timestamp,
+      signature: signature,
+      appId: conf.wx.appID
     }
   },
   // 签名生成
@@ -46,21 +57,18 @@ Fn.prototype = {
       'jsapi_ticket=' + jsapi_ticket,
       'noncestr=' + noncestr,
       'timestamp=' + timestamp,
-      'url=' + conf.wx.url_sdk
+      'url=' + me.url
     ];
-    console.log({
-      jsapi_ticket:jsapi_ticket,
-      noncestr:noncestr,
-      timestamp:timestamp,
-      url:conf.wx.url_sdk
-    });
     var str = arr.sort().join('&');
     return sha1(str);
-  }
+  },
+
 };
+
+
 // 输出验证
 exports.signature = function*(next) {
   var me = this;
-  var data = new Fn().init();
+  var data = yield new Fn(me.request.body.url).init();
   me.body = data;
 }

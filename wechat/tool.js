@@ -87,7 +87,7 @@ exports.data_to_echo = function*(data) {
   return echo;
 };
 
-// --------------------------------------------------sdk页面的URL修正
+// --------------------------------------------------sdk素材页面的URL修正
 exports.sdk_url = function(obj, info, echo) {
   var sdk_arr = conf.wx.sdk_arr;
   var url_arr = obj.href.split('?');
@@ -98,7 +98,7 @@ exports.sdk_url = function(obj, info, echo) {
       if (item.Url.indexOf(conf.wx.url_key) != -1) {}
       // 不存在
       else {
-        item.Url = url_arr[0] + item.Url
+        item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
       }
     });
   }

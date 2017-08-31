@@ -2,8 +2,15 @@ var path = require('path');
 module.exports = {
   // 微信的配置
   wx: {
+    // 测试
     appID: "wx3bfcdf272a04e696",
     appSecret: "b1932e8ff523a5693ea465a81322a7f9",
+    
+    // 线上
+    // appID: "wx164f9211d1a16b9f",
+    // appSecret: "5440387335d696136244c60c2057ac98",
+
+    
     token: "arminc",
     // -------------------------------------------------------------------------------
     token_url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
@@ -63,11 +70,6 @@ module.exports = {
           Description: 'dev',
           PicUrl: 'http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg',
           Url: "modules/voice_search/index.html"
-        }, {
-          Title: 'dev',
-          Description: 'dev',
-          PicUrl: 'http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg',
-          Url: "modules/voice_search/index.html"
         }]
       },
     ],
@@ -90,8 +92,6 @@ module.exports = {
     sdk_arr: ['dev'],
     // 配置域名的关键字
     url_key:'.me',
-    // 访问的地址
-    url_sdk:'https://arminc.pagekite.me/modules/voice_search/index.html'
   },
   // 素材类
   net: {

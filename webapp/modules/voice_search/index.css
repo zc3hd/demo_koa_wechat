@@ -80,3 +80,68 @@ not supported by any browser */
   box-sizing: border-box;
   padding-bottom: 0.5rem;
 }
+
+
+/* 图文 */
+
+#main {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding-bottom: 10%;
+}
+
+#main>#item {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  border-bottom: 2px solid #48D1CC;
+}
+
+#item>.left {
+  width: 40%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.1);
+  line-height: 50px;
+  position: absolute;
+}
+
+#item>.left>img {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#item>.right {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-left: 40%;
+}
+
+#item>.right>div{
+  box-sizing: border-box;
+  padding-left: 10%;
+  background-color: rgba(0,0,0,0.3);
+  color:#fff;
+  width: 100%;
+  height: 11%;
+  font-size: 1.1rem;
+}
+
+#item>.right>.title{
+  font-size: 1.5rem;
+  height: 23%;
+  background-color: rgba(0,0,0,0.5);
+  color: #48D1CC;
+}
+#item>.right>.alt>a{
+  font-size: 1.1rem;
+  text-decoration: none;
+  color:#FF3030;
+}
+

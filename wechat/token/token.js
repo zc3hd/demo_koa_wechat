@@ -325,11 +325,10 @@ Token.prototype = {
     me._ticket_get_loacl()
       .then(function(data) {
         console.log('* api_ticket--本地读取成功'.ticket);
-
         // 有效
         if (me._ticket_is_valid(data.expires_in)) {
           // 全局数据挂载
-          Common.ticket.api_ticket = data.api_ticket;
+          Common.ticket.api_ticket = data.ticket;
           // 全局数据挂载
           Common.ticket.expires_in = data.expires_in;
         }
@@ -734,59 +733,27 @@ Token.prototype = {
     return new Promise(function(resolve, reject) {
       me.token_init(function() {
 
-        // 到这一步票据已经挂载到全局
-        fs.readJson(me.ticket.file)
+        me._ticket_get_loacl()
           .then(function(data) {
-            console.log('ticket--本地读取成功'.ticket);
+            console.log('* api_ticket--本地读取成功'.ticket);
 
-            return;
-            // 读取本地文件夹
-            me._temp_read_dir()
-              .then(function(dirs) {
-                // 数据改变--这样的话就需要--改变一次就上传一次
-                if (dirs.length != data.arr.length) {
+            // data.expires_in = 1500000000000;
+            // 有效
+            if (me._ticket_is_valid(data.expires_in)) {
+              // 全局数据挂载
+              Common.ticket.api_ticket = data.ticket;
+              // 全局数据挂载
+              Common.ticket.expires_in = data.expires_in;
+            }
+            // 无效--线上获取
+            else {
+              me._ticket_get_online()
+                .then(function(Data) {
+                  me._ticket_save_local(Data);
 
-                  console.log('temp--素材有改变'.temp);
-
-                  // 上传所有临时素材
-                  me._temp_add_promise(dirs)
-                    // 拿到所有素材ID--时间修正
-                    .then(function(arr) {
-                      // 本地存储
-                      me._temp_save_local(arr);
-                      // 到这部的时候--临时素材的ID和有效时间已经挂载到全局
-                      resolve({});
-                    });
-                }
-                // 素材无改变
-                else {
-                  console.log('temp--素材无改变'.temp);
-                  // 测试
-                  // data.expires_in = 1500000000000;
-                  // 有效
-                  if (me._temp_is_valid(data.expires_in)) {
-                    // 全局数据挂载
-                    Common.net.temporary.expires_in = data.expires_in;
-                    // 全局数据挂载
-                    Common.net.temporary.data = data.arr;
-                  }
-                  // 无效--线上获取
-                  else {
-
-                    // 上传所有临时素材
-                    me._temp_read_dir()
-                      .then(function(arr) {
-                        return me._temp_add_promise(arr);
-                      })
-                      .then(function(arr) {
-                        // 本地存储
-                        me._temp_save_local(arr);
-                        // 到这部的时候--临时素材的ID和有效时间已经挂载到全局
-                        resolve({});
-                      });
-                  }
-                };
-              });
+                  resolve({})
+                });
+            }
           });
       })
     });
