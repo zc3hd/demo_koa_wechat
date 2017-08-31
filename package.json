@@ -1,5 +1,5 @@
 {
-  "name": "001-wx",
+  "name": "demo_koa_wechat",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
