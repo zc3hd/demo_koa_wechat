@@ -22,7 +22,7 @@ module.exports = {
     expires_in: null,
     // ----------------------------------------------
     // 本地预设的收到的数据
-    local: ['subscribe', '1', '2', 'dev'],
+    local: ['subscribe', '1', '2', 'dev','loc'],
     // 对应的回复数据
     echo: [
       // "subscribe"
@@ -72,6 +72,17 @@ module.exports = {
           Url: "modules/voice_search/index.html"
         }]
       },
+      // loc
+      {
+        // 回复--图文
+        MsgType: 'news',
+        Articles: [{
+          Title: '语音定位导航',
+          Description: 'location',
+          PicUrl: 'http://i5.hexunimg.cn/2015-09-30/179576515.jpg',
+          Url: "modules/voice_loc/index.html"
+        }]
+      },
     ],
     // 默认回复的数据
     echo_default: {
@@ -89,7 +100,7 @@ module.exports = {
       }]
     },
     // 需要调用sdk页面的关键字
-    sdk_arr: ['dev'],
+    sdk_arr: ['dev','loc'],
     // 配置域名的关键字
     url_key:'.me',
   },
