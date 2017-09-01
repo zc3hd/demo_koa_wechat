@@ -59,12 +59,40 @@ not supported by any browser */
   background-color: rgba(0, 0, 0, 0.6);
 }
 
+/* 顶部栏 */
+#app>#top{
+  width: 100%;
+  height: 50px;
+  
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0;
+}
+#app>#top>div{
+  float: left;
+  width: 50%;
+  height: 100%;
+  font-size: 1.5rem;
+  color: #fff;
+  transition: all 0.3s ease-in;
+  line-height: 50px;
+  text-align: center;
+}
+#app>#top>#start{
+  width: 85%;
+  background-color: #000080;
+}
+#app>#top>#end{
+  width: 15%;
+  background-color: #4169E1;
+}
 
 /* 点击按钮 */
 
 #app>#btn {
   width: 100%;
-  height: 10%;
+  height: 50px;
   background-color: rgb(38, 38, 38);
   color: #fff;
   font-size: 2.5rem;
@@ -77,8 +105,7 @@ not supported by any browser */
   background-size: 220px 139px;
   background-position: center center;
   background-repeat: no-repeat;
-  box-sizing: border-box;
-  padding-bottom: 0.5rem;
+  z-index: 9999;
 }
 
 
@@ -87,61 +114,57 @@ not supported by any browser */
 #main {
   width: 100%;
   height: 100%;
-  position: relative;
-  overflow-y: auto;
   box-sizing: border-box;
-  padding-bottom: 18%;
+  padding-bottom: 50px;
+  padding-top: 50px;
 }
 
-#main>#item {
-  width: 100%;
-  height: 250px;
-  position: relative;
-  border-bottom: 2px solid #48D1CC;
-}
-
-#item>.left {
-  width: 40%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.1);
-  line-height: 50px;
-  position: absolute;
-}
-
-#item>.left>img {
-  width: 100%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#item>.right {
+#main>#map {
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
-  padding-left: 40%;
 }
 
-#item>.right>div{
-  box-sizing: border-box;
-  padding-left: 10%;
-  background-color: rgba(0,0,0,0.3);
-  color:#fff;
-  width: 100%;
-  height: 11%;
-  font-size: 1.1rem;
+.marker {
+  position: relative;
 }
 
-#item>.right>.title{
-  font-size: 1.5rem;
-  height: 23%;
-  background-color: rgba(0,0,0,0.5);
-  color: #48D1CC;
-}
-#item>.right>.alt>a{
-  font-size: 1.1rem;
-  text-decoration: none;
-  color:#FF3030;
+/*面板的位置*/
+.marker>.label {
+  position: relative;
+  color: #fff;
+  background-color: rgba(238, 99, 99, 0.8);
+  border-radius: 4px;
+  padding: 5px 20px;
+  min-width: 120px;
+  z-index: 1000;
+  
+  position: absolute;
+  top: -42px;
+  left: -53px;
+  
+  
 }
 
+// 信息板面
+.marker>.label>.info {
+  display: block;
+  text-align: center;
+  overflow: hidden;
+  /*字体*/
+  font: 12px arial, simsun, sans-serif;
+  white-space: nowrap;
+}
+
+// 箭头
+.marker>.label>.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  bottom: -7px;
+  left: 78px;
+  margin-left: -5px;
+  border-width: 8px 8px 0;
+  border-top-color: rgba(238, 99, 99, 0.8);
+}
