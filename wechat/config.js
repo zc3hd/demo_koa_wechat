@@ -22,7 +22,7 @@ module.exports = {
     expires_in: null,
     // ----------------------------------------------
     // 本地预设的收到的数据
-    local: ['subscribe', '1', '2', 'dev','loc'],
+    local: ['subscribe', '1', '2', 'mov','gd','bd'],
     // 对应的回复数据
     echo: [
       // "subscribe"
@@ -61,29 +61,44 @@ module.exports = {
         MsgType: 'text',
         Content: '你输入的是2'
       },
-      // dev
+      // mov
       {
         // 回复--图文
         MsgType: 'news',
         Articles: [{
-          Title: 'dev',
-          Description: 'dev',
+          Title: 'mov',
+          Description: 'mov',
           PicUrl: 'http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg',
-          Url: "modules/voice_search/index.html"
+          Url: "modules/voice_search_moive/index.html"
         }]
       },
-      // loc
+      // gd
       {
         // 回复--图文
         MsgType: 'news',
         Articles: [{
-          Title: '语音定位导航',
+          Title: '语音定位导航(gaode)',
           Description: 'location',
           PicUrl: 'http://i5.hexunimg.cn/2015-09-30/179576515.jpg',
-          Url: "modules/voice_loc/index.html"
+          Url: "modules/voice_loc_Gaode/index.html"
+        }]
+      },
+      // bd
+      {
+        // 回复--图文
+        MsgType: 'news',
+        Articles: [{
+          Title: '语音定位导航(baidu)',
+          Description: 'location',
+          PicUrl: 'http://i5.hexunimg.cn/2015-09-30/179576515.jpg',
+          Url: "modules/voice_loc_baidu/index.html"
         }]
       },
     ],
+    // 需要调用sdk页面的关键字
+    sdk_arr: ['mov','gd','bd'],
+    // 配置域名的关键字
+    url_key:'.me',
     // 默认回复的数据
     echo_default: {
       MsgType: 'news',
@@ -99,10 +114,6 @@ module.exports = {
         Url: "https://zc3hd.github.io/"
       }]
     },
-    // 需要调用sdk页面的关键字
-    sdk_arr: ['dev','loc'],
-    // 配置域名的关键字
-    url_key:'.me',
   },
   // 素材类
   net: {

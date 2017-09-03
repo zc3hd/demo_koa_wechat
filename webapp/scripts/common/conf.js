@@ -7,6 +7,7 @@
     module: {},
   };
   win.cons = function(obj) {
+    obj.data = JSON.stringify(obj.data);
     $.ajax({
       url: "/web_console",
       dataType: "json",

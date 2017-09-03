@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公交导航</title>
+  <link rel="stylesheet" href="./index.css">
+  <!-- jq -->
+  <script src="../../scripts/lib/jquery/jquery.js" type="text/javascript"></script>
+  <!-- layer -->
+  <link rel="stylesheet" href="../../scripts/lib/layer/skin/layer.css">
+  <script src="../../scripts/lib/layer/layer.js" type="text/javascript"></script>
+  <!-- conf -->
+  <script src="../../scripts/common/conf.js" type="text/javascript"></script>
+  <!-- api -->
+  <script src="../../scripts/api.js" type="text/javascript"></script>
+  <!-- wx -->
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js" type="text/javascript"></script>
+  <!-- map -->
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=6VArBpbbbMjBVP22TflHkpSq"></script>
+  <!-- main -->
+  <script src="./index.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- pt -->
+    <div id="top" class="noselect">
+      <div id="start">选择起点</div>
+      <div id="end">终点</div>
+    </div>
+    <div id="main">
+      <div id="map"></div>
+    </div>
+    <!-- 搜索区 -->
+    <div id="btn" class="middle noselect">...</div>
+  </div>
+</body>
+<script type="text/javascript">
+$(function() {
+  new conf.module.Map_main("map").init();
+});
+</script>
+
+</html>

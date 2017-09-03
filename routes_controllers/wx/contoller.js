@@ -72,7 +72,9 @@ exports.approve_echo = function*(next) {
     var echo = yield tool.data_to_echo(data);
 
     tool.sdk_url(me, data.Content, echo);
-
+    
+    console.log(me.href);
+    
     me.status = 200;
     me.type = 'application/xml';
     me.body = tool.tpl(echo);
