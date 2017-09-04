@@ -63,23 +63,30 @@ exports.data_to_echo = function*(data) {
     FromUserName: data.ToUserName,
     CreateTime: null,
   };
+
   // 本地预设数据
   var _local = require('./config.js').wx.local;
+  // 本地sdk预设数据
+  var _sdk_arr = require('./config.js').wx.sdk_arr;
   // 永久素材-other
   var _other = require('./config.js').net.permanent.arr_other;
+
+
   // 来的-data.MsgType-数据类型--event--text
   var cinfo = data.Event || data.Content;
+
 
   // 本地数据存在--同步读取寻找预设数据
   if (_local.indexOf(cinfo) != -1) {
     new Core().init(_local.indexOf(cinfo), echo, 'local');
   }
+  else if(_sdk_arr.indexOf(cinfo) != -1){
+    new Core().init(_sdk_arr.indexOf(cinfo), echo, 'sdk');
+  }
   // 永久-other
   else if (_other.indexOf(cinfo) != -1) {
     new Core().init(_other.indexOf(cinfo), echo, 'other');
   }
-  // 永久-news
-
   // 临时--需要在异步中找
   else {
     echo = yield new Core_async().init(cinfo, echo);
@@ -92,11 +99,13 @@ exports.sdk_url = function(obj, info, echo) {
   var sdk_arr = conf.wx.sdk_arr;
   var url_arr = obj.href.split('?');
   var articles = echo.Articles;
-  // 需要修正路径
+  
+  // 属于sdk数组
   if (sdk_arr.indexOf(info) != -1) {
     articles.forEach(function(item, index) {
+      // 已经拼接完成
       if (item.Url.indexOf(conf.wx.url_key) != -1) {}
-      // 不存在
+      // 未拼接完成
       else {
         item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
       }

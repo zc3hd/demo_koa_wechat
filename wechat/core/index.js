@@ -14,11 +14,15 @@ Core.prototype = {
       case "local":
         me.core = Common.wx.echo;
         break;
-        // other
+      // sdk
+      case "sdk":
+        me.core = Common.wx.sdk_echo;
+        break;  
+      // other
       case "other":
         me.core = Common.net.permanent.data_other;
         break;
-        // other
+      // other
       case "news":
         me.core = Common.net.permanent.data_other;
         break;

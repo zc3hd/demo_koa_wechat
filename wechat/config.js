@@ -5,12 +5,12 @@ module.exports = {
     // 测试
     appID: "wx3bfcdf272a04e696",
     appSecret: "b1932e8ff523a5693ea465a81322a7f9",
-    
+
     // 线上
     // appID: "wx164f9211d1a16b9f",
     // appSecret: "5440387335d696136244c60c2057ac98",
 
-    
+
     token: "arminc",
     // -------------------------------------------------------------------------------
     token_url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
@@ -22,7 +22,7 @@ module.exports = {
     expires_in: null,
     // ----------------------------------------------
     // 本地预设的收到的数据
-    local: ['subscribe', '1', '2', 'mov','gd','bd'],
+    local: ['subscribe', '1', '2'],
     // 对应的回复数据
     echo: [
       // "subscribe"
@@ -61,6 +61,11 @@ module.exports = {
         MsgType: 'text',
         Content: '你输入的是2'
       },
+    ],
+    // 需要调用sdk页面的关键字
+    sdk_arr: ['mov', 'gd', 'bd', 'bike', ],
+    // 对应回复的数据
+    sdk_echo: [
       // mov
       {
         // 回复--图文
@@ -94,11 +99,20 @@ module.exports = {
           Url: "modules/voice_loc_baidu/index.html"
         }]
       },
+      // bike
+      {
+        // 回复--图文
+        MsgType: 'news',
+        Articles: [{
+          Title: '北京公共自行车站点导航',
+          Description: '【一键定位|最近站点|规划路线】',
+          PicUrl: 'http://i5.hexunimg.cn/2015-09-30/179576515.jpg',
+          Url: "modules/loc_find_bikeHome/index.html"
+        }]
+      },
     ],
-    // 需要调用sdk页面的关键字
-    sdk_arr: ['mov','gd','bd'],
     // 配置域名的关键字
-    url_key:'.me',
+    url_key: '.me',
     // 默认回复的数据
     echo_default: {
       MsgType: 'news',

@@ -10,7 +10,7 @@
       img_h: 66,
       img_src: './img/sn.png',
       // map--样式
-      style: 'amap://styles/macaron',
+      style: 'amap://styles/blue',
     };
     // 初始化null
     me.pt = null;
@@ -22,8 +22,66 @@
       me._scroll();
       // 操作栏
       me.banner();
-      // me.sdk_init();
-      me.map_init();
+      // 关注初始化
+      me.follow_init();
+    },
+    test: function() {
+
+    },
+    // 关注初始化
+    follow_init:function () {
+      var me = this;
+      var key = common_fn.getParam('from');
+      // 已关注
+      if (key==null) {
+        // 地图初始化
+        me.map_init();
+        // me.sdk_init();
+      }
+      // 转发的，默认为未关注
+      else {
+        me.follow();
+      }
+    },
+    follow: function() {
+      var me = this;
+      var str = `
+      <div id="scan_m">
+      <img src="./img/wx.jpg" alt="">
+      </div>
+      `
+      layer.open({
+        type: 1,
+        title: '请长按二维进行关注后使用服务',
+        area: ['90%', '60%'],
+        anim: 1,
+        shade: 0.6,
+        closeBtn: 0,
+        content: str,
+        skin: 'layer_wxscan',
+        success: function(layero, index) {
+          // 当前的layer的dom层
+          // console.log(layero);
+
+          var w = $('#scan_m').width();
+          var h = $('#scan_m').height();
+
+          // 高
+          if (w>h) {
+            $('#scan_m>img').css({
+              width:h*0.9+'px',
+              height:h*0.9+'px',
+            });
+          }
+          // 宽
+          else {
+            $('#scan_m>img').css({
+              width:w*0.9+'px',
+              height:w*0.9+'px',
+            });
+          }
+        }
+      });
     },
     // 操作栏
     banner: function() {
@@ -93,7 +151,7 @@
     ban_click: function(obj) {
       var me = this;
       $('#' + obj.id1).off().on('click', function() {
-        
+
         $('#' + obj.id1).css({
           width: obj.w1,
           backgroundColor: obj.bgc1
@@ -109,97 +167,6 @@
           backgroundColor: obj.bgc3
         }).html(obj.str3);
 
-      });
-    },
-    // ------------------------------------------sdk
-    // sdk初始化
-    sdk_init: function() {
-      var me = this;
-      me.api.signature({
-        url: window.location.href
-      }).done(function(data) {
-        me.wx_config(data);
-        wx.ready(function() {
-          me.record();
-        });
-      });
-    },
-    // 初始化配置
-    wx_config: function(data) {
-      var me = this;
-      wx.config({
-        // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-        debug: false,
-        // 必填，公众号的唯一标识
-        appId: data.appId,
-        // 必填，生成签名的时间戳
-        timestamp: data.timestamp,
-        // 必填，生成签名的随机串
-        nonceStr: data.noncestr,
-        // 必填，签名，见附录1
-        signature: data.signature,
-        // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-        jsApiList: ['startRecord', 'stopRecord', 'onVoiceRecordEnd', 'translateVoice']
-      });
-    },
-    // ------------------------------------------record
-    // 语音交互
-    record: function() {
-      var me = this;
-      var str = '语音搜索位置'
-      $('#btn').html(str)
-      var key = true;
-      // 开始录音
-      $('#btn').on('click', function() {
-        // 录制
-        if (key) {
-          key = false;
-          $('#btn').css({
-            height: '20%',
-            backgroundImage: 'url("./img/start.GIF")',
-            fontSize: "2rem"
-          }).addClass('bottom').html('正在录音...');
-          // 开始录音
-          me.record_start();
-        }
-        // stop
-        else {
-          key = true;
-          $('#btn').css({
-            height: '50px',
-            backgroundImage: 'url("./img/end.jpg")',
-            fontSize: "2.5rem"
-          }).removeClass("bottom").html(str);
-          me.record_stop();
-        }
-      });
-    },
-    // 开始录音
-    record_start: function() {
-      wx.startRecord({
-        cancel: function() {
-          alert('您取消了录音');
-        },
-      });
-    },
-    // 停止
-    record_stop: function() {
-      var me = this;
-      wx.stopRecord({
-        success: function(res) {
-          me.record_translate(res.localId);
-        }
-      });
-    },
-    // 翻译
-    record_translate: function(localId) {
-      var me = this;
-      wx.translateVoice({
-        localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
-        isShowProgressTips: 1, // 默认为1，显示进度提示
-        success: function(res) {
-          cons(res);
-        }
       });
     },
     // ------------------------------------------map
@@ -320,7 +287,21 @@
       Big.appendChild(div);
       marker.setContent(Big); //更新点标记内容
     },
-    // 禁止页面滚动
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // -------------------------------------------------------禁止页面滚动
     _scroll: function() {
       var overscroll = function(el) {
         el.addEventListener('touchstart', function() {
@@ -343,6 +324,97 @@
       document.body.addEventListener('touchmove', function(evt) {
         if (!evt._isScroller) {
           evt.preventDefault();
+        }
+      });
+    },
+    // ---------------------------------------------------------------sdk
+    // sdk初始化
+    sdk_init: function() {
+      var me = this;
+      me.api.signature({
+        url: window.location.href
+      }).done(function(data) {
+        me.wx_config(data);
+        wx.ready(function() {
+          me.record();
+        });
+      });
+    },
+    // 初始化配置
+    wx_config: function(data) {
+      var me = this;
+      wx.config({
+        // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: false,
+        // 必填，公众号的唯一标识
+        appId: data.appId,
+        // 必填，生成签名的时间戳
+        timestamp: data.timestamp,
+        // 必填，生成签名的随机串
+        nonceStr: data.noncestr,
+        // 必填，签名，见附录1
+        signature: data.signature,
+        // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        jsApiList: ['startRecord', 'stopRecord', 'onVoiceRecordEnd', 'translateVoice']
+      });
+    },
+    // ------------------------------------------record
+    // 语音交互
+    record: function() {
+      var me = this;
+      var str = '语音搜索位置'
+      $('#btn').html(str)
+      var key = true;
+      // 开始录音
+      $('#btn').on('click', function() {
+        // 录制
+        if (key) {
+          key = false;
+          $('#btn').css({
+            height: '20%',
+            backgroundImage: 'url("./img/start.GIF")',
+            fontSize: "2rem"
+          }).addClass('bottom').html('正在录音...');
+          // 开始录音
+          me.record_start();
+        }
+        // stop
+        else {
+          key = true;
+          $('#btn').css({
+            height: '50px',
+            backgroundImage: 'url("./img/end.jpg")',
+            fontSize: "2.5rem"
+          }).removeClass("bottom").html(str);
+          me.record_stop();
+        }
+      });
+    },
+    // 开始录音
+    record_start: function() {
+      wx.startRecord({
+        cancel: function() {
+          alert('您取消了录音');
+        },
+      });
+    },
+    // 停止
+    record_stop: function() {
+      var me = this;
+      wx.stopRecord({
+        success: function(res) {
+          me.record_translate(res.localId);
+        }
+      });
+    },
+    // 翻译
+    record_translate: function(localId) {
+      var me = this;
+      wx.translateVoice({
+        localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+        isShowProgressTips: 1, // 默认为1，显示进度提示
+        success: function(res) {
+          cons(res);
         }
       });
     },

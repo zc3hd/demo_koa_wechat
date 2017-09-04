@@ -3,7 +3,8 @@
   margin: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
 }
@@ -88,6 +89,7 @@ not supported by any browser */
 
 
 /* 站点 */
+
 #app>#banner>#pt {
   background-color: #4169E1;
   box-sizing: border-box;
@@ -95,16 +97,15 @@ not supported by any browser */
   border-left: 2px solid #000080;
 }
 
+
 /* 规划线路 */
+
 #app>#banner>#line {
   background-color: #4169E1;
 }
 
 
-
-
-
-/* 图文 */
+/* 地图 */
 
 #main {
   width: 100%;
@@ -164,4 +165,50 @@ not supported by any browser */
   margin-left: -5px;
   border-width: 8px 8px 0;
   border-top-color: rgba(0, 0, 0, 0.8);
+}
+
+#scan_m {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-image: linear-gradient(135deg, #fff 25%, transparent 25%, transparent 50%, #fff 50%, #fff 75%, transparent 75%, transparent 100%);
+  background-size: 50px 50px;
+  animation: run 1s forwards 1s infinite;
+}
+
+#scan_m>img {
+  width: 200px;
+  height: 200px;
+  transition: all 0.3s ease-in;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+/* 微信二维码的弹窗 */
+
+.layer_wxscan>.layui-layer-title {
+  font-size: 1.1rem;
+  color: #fff;
+  background-color: #000080;
+}
+
+@keyframes run {
+  0% {
+    background-image: linear-gradient(135deg, #4169E1 25%, transparent 25%, transparent 50%, #4169E1 50%, #4169E1 75%, transparent 75%, transparent 100%);
+  }
+  25%{
+    background-image: linear-gradient(135deg, transparent 25%, #4169E1 25%, #4169E1 50%, transparent 50%, transparent 75%, #4169E1 75%, #4169E1 100%);
+  }
+  50% {
+    background-image: linear-gradient(135deg, #4169E1 25%, transparent 25%, transparent 50%, #4169E1 50%, #4169E1 75%, transparent 75%, transparent 100%);
+  }
+  75%{
+    background-image: linear-gradient(135deg, transparent 25%, #4169E1 25%, #4169E1 50%, transparent 50%, transparent 75%, #4169E1 75%, #4169E1 100%);
+  }
+  100% {
+    background-image: linear-gradient(135deg, #4169E1 25%, transparent 25%, transparent 50%, #4169E1 50%, #4169E1 75%, transparent 75%, transparent 100%);
+  }
 }
