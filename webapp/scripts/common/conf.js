@@ -8,7 +8,7 @@
   };
   // 后台测试
   win.cons = function(obj) {
-    obj.data = JSON.stringify(obj.data);
+    // obj.data = JSON.stringify(obj.data);
     $.ajax({
       url: "/web_console",
       dataType: "json",
@@ -18,8 +18,56 @@
   };
   // 公共函数
   win.common_fn = {
+    // ------------------关注函数的全局设置
+    follow_init: function(cb) {
+      var key = common_fn.getParam('from');
+      // 已关注
+      if (key == null) {
+        // 执行相应的函数
+        cb();
+      }
+      // 转发的，默认为未关注
+      else {
+        var str = `
+          <div id="scan_m">
+          <img src="/css/follow/wx.jpg" alt="">
+          </div>
+          `;
+        layer.open({
+          type: 1,
+          title: '请长按二维进行关注后使用服务',
+          area: ['90%', '60%'],
+          anim: 1,
+          shade: 0.6,
+          closeBtn: 0,
+          content: str,
+          skin: 'layer_wxscan',
+          success: function(layero, index) {
+
+            var w = $('#scan_m').width();
+            var h = $('#scan_m').height();
+
+            // 高
+            if (w > h) {
+              $('#scan_m>img').css({
+                width: h * 0.9 + 'px',
+                height: h * 0.9 + 'px',
+              });
+            }
+            // 宽
+            else {
+              $('#scan_m>img').css({
+                width: w * 0.9 + 'px',
+                height: w * 0.9 + 'px',
+              });
+            }
+
+          }
+        });
+      }
+    },
     //-------------------获取浏览器url的参数
-    getParam: function(name) { 
+    getParam: function(name) {
       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
       var r = window.location.search.substr(1).match(reg);
       if (r != null)
@@ -42,7 +90,7 @@
       }
     },
     //日期转换后，个位数加零
-    checkNum: function(num) { 
+    checkNum: function(num) {
       if (num < 10) {
         return "0" + num;
       }
@@ -181,7 +229,7 @@
       }
     },
     //------------------验证手机号码
-    checkPhone: function(phone) { 
+    checkPhone: function(phone) {
       if (!(/^1[3|4|5|7|8]\d{9}$/.test(phone))) {
         layer.msg('手机号码有误，请重新填写', { icon: 0, time: 1500 });
         return false;

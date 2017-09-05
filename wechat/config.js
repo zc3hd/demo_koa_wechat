@@ -1,16 +1,13 @@
 var path = require('path');
-module.exports = {
+var conf = {
+  // 服务的一些配置
+  app: {
+    // db--数据库名称
+    db: 'wechat_demo',
+    // port:1234
+  },
   // 微信的配置
   wx: {
-    // 测试
-    appID: "wx3bfcdf272a04e696",
-    appSecret: "b1932e8ff523a5693ea465a81322a7f9",
-
-    // 线上
-    // appID: "wx164f9211d1a16b9f",
-    // appSecret: "5440387335d696136244c60c2057ac98",
-
-
     token: "arminc",
     // -------------------------------------------------------------------------------
     token_url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential',
@@ -62,10 +59,24 @@ module.exports = {
         Content: '你输入的是2'
       },
     ],
+    // ----------------------------------------------
+    // 管理员关键字
+    admin_key:'admin',
     // 需要调用sdk页面的关键字
-    sdk_arr: ['mov', 'gd', 'bd', 'bike', ],
+    sdk_arr: ['admin', 'mov', 'gd', 'bd', 'bike', ],
     // 对应回复的数据
     sdk_echo: [
+      // admin
+      {
+        // 回复--图文
+        MsgType: 'news',
+        Articles: [{
+          Title: 'welcome admin',
+          Description: 'this is my place',
+          PicUrl: 'http://www.chhua.com/wp-content/uploads/auto_save_image/2013/08/0302124RG.jpg',
+          Url: "modules/admin_manage/index.html"
+        }]
+      },
       // mov
       {
         // 回复--图文
@@ -185,6 +196,20 @@ module.exports = {
     temp: 'cyan',
     other: 'magenta',
     news: 'blue',
-    ticket: 'bgBlue'
+    ticket: 'bgBlue',
+    // 背景品红
+    app: 'bgMagenta',
   },
 };
+
+// test
+conf.wx.appID = "wx3bfcdf272a04e696";
+conf.wx.appSecret = "b1932e8ff523a5693ea465a81322a7f9";
+conf.app.port = 1234;
+
+// online
+// conf.wx.appID = "wx164f9211d1a16b9f";
+// conf.wx.appSecret = "5440387335d696136244c60c2057ac98";
+// conf.app.port = 80;
+
+module.exports = conf;

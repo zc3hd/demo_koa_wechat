@@ -86,6 +86,50 @@ fn: function() {
 
 -------------------------------------------------
 
-* 每次从微信客户端过来的信息都会有个全路径，http://arminc.pagekite.me/?signature=1c71d7afd7df89e72c7239538cbdacf0efde2473&ti
-mestamp=1504448652&nonce=1362152290&openid=olquvwBA1Kk4ZEJwTuxwiXAmO7js，这个全路径就是当时这个信息访问的全路径，然后拼接到我们的静态资源的路径上。
+* 每次从微信客户端过来的信息都会有个全路径，`http://arminc.pagekite.me/?signature=1c71d7afd7df89e72c7239538cbdacf0efde2473&ti
+mestamp=1504448652&nonce=1362152290&openid=olquvwBA1Kk4ZEJwTuxwiXAmO7js`，这个全路径就是当时这个信息访问的全路径，然后拼接到我们的静态资源的路径上。
 
+---------------------------------
+
+* 2017-9-5
+* 数据库的接入
+* 关注的函数的全局化,动态加载样式库，后面样式设置的代码也要异步处理
+
+```
+$("head").append("<link>");
+css = $("head").children(":last");
+css.attr({
+  rel: "stylesheet",
+  type: "text/css",
+  href: "/scripts/common/follow/index.css"
+});
+
+setTimeout(function() {
+  var w = $('#scan_m').width();
+  var h = $('#scan_m').height();
+
+  // 高
+  if (w > h) {
+    $('#scan_m>img').css({
+      width: h * 0.9 + 'px',
+      height: h * 0.9 + 'px',
+    });
+  }
+  // 宽
+  else {
+    $('#scan_m>img').css({
+      width: w * 0.9 + 'px',
+      height: w * 0.9 + 'px',
+    });
+  }
+}, 1000)
+```
+
+* 从微信PC端转发的网页是url:`http://arminc.pagekite.me/modules/admin/index.html?FromUserName=olquvwBA1Kk4ZEJwTuxwiXAmO7js`;
+* 从手机端转发的网页的URL就有那个from的配置参数。这个特别注意下，这个没有办法。
+* 前端数据后台打印，全部为字符串了。不然有点麻烦，约定为info
+
+* koa-router 我用的这个版本有问题，大概是这样的问题：就是我多次挂载路由，但是在后面的路由就不起作用了。于是我只能挂载到能起作用的路由控制里。形成一个单独的API的控制器。里面有个modules文件，控制着不同的业务逻辑的方法。
+
+* 本地SDK_html页面的url修正，因为是对象，修正完后就不会改变了。以至于其他人调用的时候，会把保存的我的信息给别人带过去。这是不行的。
+* 所以，接下来就是本地、SDK、临时存入本地数据库。这样就不会对同一个对象改变他的属性了。

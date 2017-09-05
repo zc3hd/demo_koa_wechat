@@ -1,10 +1,51 @@
 'use strict';
 var Koa = require('koa');
-
 var path = require('path');
-// 静态服务器
 var staticServer = require('koa-static');
 var bodyparser = require('koa-bodyparser')
+var conf = require('./wechat/config.js');
+var colors = require('colors');
+colors.setTheme(conf.log);
+
+
+// -------------------------------------2017-8-29
+var app = new Koa();
+// 数据库
+var db = require('./mongo/db.js');
+// PSOT解析
+app.use(bodyparser({ enableTypes: ['json', 'form', 'text'] }));
+// 静态文件
+app.use(staticServer(path.join(__dirname, './webapp')));
+
+
+// ------------------------------------------API
+var all_routes = require('./routes_controllers/routes.js')
+all_routes(app);
+
+
+
+db.once('open', function(callback) {
+  console.log(`>>--数据库-${conf.app.db}-连接成功--<<`.app);
+  app.listen(conf.app.port, function() {
+    console.log(`>>--app on-${conf.app.port}-启动成功--<<`.app);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // -------------------------------------2017-8-25
 // // 微信服务器验证我们
@@ -17,36 +58,3 @@ var bodyparser = require('koa-bodyparser')
 
 // // 
 // app.use(wx(conf));
-
-
-// -------------------------------------2017-8-29
-
-var app = new Koa();
-
-app.use(bodyparser({
-  enableTypes: ['json', 'form', 'text']
-}));
-// 静态文件
-app.use(staticServer(path.join(__dirname, './webapp')));
-
-
-// 前端数据的后台打印显示
-var web_console_test = require('./routes_controllers/web_console/route.js');
-app.use(web_console_test.routes(), web_console_test.allowedMethods());
-
-// 和微信服务器的交互
-var wx = require('./routes_controllers/wx/route.js');
-app.use(wx.routes(), wx.allowedMethods());
-
-// sdk
-var sdk_init = require('./routes_controllers/sdk_init/route.js');
-app.use(sdk_init.routes(), sdk_init.allowedMethods());
-
-
-
-
-
-
-app.listen(1234, function() {
-  console.log('on 1234');
-});

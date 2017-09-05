@@ -53,8 +53,6 @@ function format_data(obj) {
 }
 exports.format_data = format_data;
 
-
-
 // --------------------------------------------------回复数据的设置
 exports.data_to_echo = function*(data) {
   // 预回复数据初始化
@@ -79,8 +77,7 @@ exports.data_to_echo = function*(data) {
   // 本地数据存在--同步读取寻找预设数据
   if (_local.indexOf(cinfo) != -1) {
     new Core().init(_local.indexOf(cinfo), echo, 'local');
-  }
-  else if(_sdk_arr.indexOf(cinfo) != -1){
+  } else if (_sdk_arr.indexOf(cinfo) != -1) {
     new Core().init(_sdk_arr.indexOf(cinfo), echo, 'sdk');
   }
   // 永久-other
@@ -95,23 +92,29 @@ exports.data_to_echo = function*(data) {
 };
 
 // --------------------------------------------------sdk素材页面的URL修正
-exports.sdk_url = function(obj, info, echo) {
+exports.sdk_url = function(obj, Come_data, echo) {
   var sdk_arr = conf.wx.sdk_arr;
   var url_arr = obj.href.split('?');
   var articles = echo.Articles;
-  
+
   // 属于sdk数组
-  if (sdk_arr.indexOf(info) != -1) {
+  if (sdk_arr.indexOf(Come_data.Content) != -1) {
     articles.forEach(function(item, index) {
       // 已经拼接完成
       if (item.Url.indexOf(conf.wx.url_key) != -1) {}
       // 未拼接完成
       else {
-        item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
+        // 超级管理员--需要拼接上超级管理员的信息
+        if (conf.wx.admin_key == Come_data.Content) {
+          item.Url = url_arr[0] + item.Url + '?FromUserName=' + Come_data.FromUserName;
+        } else {
+          item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
+        }
       }
     });
   }
 };
+
 
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {

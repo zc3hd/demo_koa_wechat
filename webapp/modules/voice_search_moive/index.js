@@ -8,8 +8,10 @@
     init: function() {
       var me = this;
       me.no_scroll();
-      me.sdk_init();
-      me.db_movie(me.init_key);
+      common_fn.follow_init(function() {
+        me.sdk_init();
+        me.db_movie(me.init_key);
+      });
     },
     // 禁止页面滚动
     no_scroll: function() {
@@ -41,7 +43,7 @@
     // sdk初始化
     sdk_init: function() {
       var me = this;
-      me.api.signature({
+      me.api.sdk.signature({
           url: window.location.href
         })
         .done(function(data) {
@@ -148,7 +150,7 @@
     // 电影请求数据
     db_movie: function(str) {
       var me = this;
-      me.api.movie(str)
+      me.api.movie.search(str)
         .done(function(data) {
           me.db_movie_render(data.subjects);
         })

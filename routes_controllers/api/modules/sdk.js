@@ -1,18 +1,18 @@
 // 票据对象
-var conf = require('../../wechat/config.js');
+var conf = require('../../../wechat/config.js');
 var sha1 = require('sha1');
-var Token = require('../../wechat/token/token.js');
+var Token = require('../../../wechat/token/token.js');
 
-function Fn(url) {
+function SDK(url) {
   var me = this;
   me.url = url;
 }
-Fn.prototype = {
+SDK.prototype = {
   init: function*() {
     var me = this;
 
     // conf.ticket.expires_in = 1500000000000;
-    
+
     // ------------有效
     if (me._valid(conf.ticket.expires_in)) {}
     // 无效
@@ -62,13 +62,6 @@ Fn.prototype = {
     var str = arr.sort().join('&');
     return sha1(str);
   },
-
 };
 
-
-// 输出验证
-exports.signature = function*(next) {
-  var me = this;
-  var data = yield new Fn(me.request.body.url).init();
-  me.body = data;
-}
+module.exports = SDK;

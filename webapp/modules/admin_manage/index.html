@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+  <title>admin</title>
+  <!-- weui -->
+  <link rel="stylesheet" href="../../scripts/lib/weui/dist/style/weui.css">
+  <!-- css-my -->
+  <link rel="stylesheet" href="./index.css">
+  <!-- follow -->
+  <link rel="stylesheet" href="../../css/follow/index.css">
+  <!-- jq -->
+  <script src="../../scripts/lib/jquery/jquery.js" type="text/javascript"></script>
+  <!-- layer -->
+  <link rel="stylesheet" href="../../scripts/lib/layer/skin/layer.css">
+  <script src="../../scripts/lib/layer/layer.js" type="text/javascript"></script>
+  <!-- md5 -->
+  <script src="../../scripts/lib/md5/jquery.md5.js" type="text/javascript"></script>
+  <!-- conf -->
+  <script src="../../scripts/common/conf.js" type="text/javascript"></script>
+  <!-- api -->
+  <script src="../../scripts/api.js" type="text/javascript"></script>
+  <!-- wx -->
+  <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js" type="text/javascript"></script> -->
+  <!-- main -->
+  <script src="./index.js" type="text/javascript"></script>
+  <!-- data -->
+  <!-- <script src="./data.js" type="text/javascript"></script> -->
+</head>
+
+<body ontouchstart>
+  <div id="app">
+    <!-- 1 login -->
+    <div id="login">
+      <!-- 图片 -->
+      <div class="img"></div>
+      <!-- 输入区 -->
+      <div class="input">
+        <!-- title -->
+        <div class="weui-cells__title title">admin login</div>
+        <!-- input -->
+        <div class="weui-cells weui-cells_form">
+          <div class="weui-cell">
+            <div class="weui-cell__hd">
+              <label class="weui-label">name</label>
+            </div>
+            <div class="weui-cell__bd">
+              <input class="weui-input" id="name" type="text" placeholder="input name">
+            </div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__hd">
+              <label class="weui-label">password</label>
+            </div>
+            <div class="weui-cell__bd">
+              <input class="weui-input" type="password" id="password" placeholder="input password">
+            </div>
+          </div>
+        </div>
+        <!-- 按钮 -->
+        <div class="weui-btn-area">
+          <a class="weui-btn weui-btn_primary" href="javascript:" id="login_btn">login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+$(function() {
+  new conf.module.Admin().init();
+});
+</script>
+
+</html>

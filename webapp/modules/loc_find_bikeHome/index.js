@@ -23,67 +23,15 @@
       // 操作栏
       me.banner();
       // 关注初始化
-      me.follow_init();
+      // me.follow_init();
+      common_fn.follow_init(function () {
+        me.map_init();
+      });
     },
     test: function() {
 
     },
-    // 关注初始化
-    follow_init:function () {
-      var me = this;
-      var key = common_fn.getParam('from');
-      // 已关注
-      if (key==null) {
-        // 地图初始化
-        me.map_init();
-        // me.sdk_init();
-      }
-      // 转发的，默认为未关注
-      else {
-        me.follow();
-      }
-    },
-    follow: function() {
-      var me = this;
-      var str = `
-      <div id="scan_m">
-      <img src="./img/wx.jpg" alt="">
-      </div>
-      `
-      layer.open({
-        type: 1,
-        title: '请长按二维进行关注后使用服务',
-        area: ['90%', '60%'],
-        anim: 1,
-        shade: 0.6,
-        closeBtn: 0,
-        content: str,
-        skin: 'layer_wxscan',
-        success: function(layero, index) {
-          // 当前的layer的dom层
-          // console.log(layero);
-
-          var w = $('#scan_m').width();
-          var h = $('#scan_m').height();
-
-          // 高
-          if (w>h) {
-            $('#scan_m>img').css({
-              width:h*0.9+'px',
-              height:h*0.9+'px',
-            });
-          }
-          // 宽
-          else {
-            $('#scan_m>img').css({
-              width:w*0.9+'px',
-              height:w*0.9+'px',
-            });
-          }
-        }
-      });
-    },
-    // 操作栏
+    // ---------------------------------------操作栏
     banner: function() {
       var me = this;
       var arr = [
