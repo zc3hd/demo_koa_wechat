@@ -5,14 +5,17 @@ var xml2js = require('xml2js');
 var Core = require('./core/index.js');
 var Core_async = require('./core_async/index.js');
 var conf = require('./config.js');
-
-
+// 素材库
+var Data = require('../mongo/models/Data.js');
+// 
+// 
+// 
+// 
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
-}
-
+};
 // --------------------------------------------------xml转化为对象
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
@@ -23,7 +26,6 @@ exports.xml2js = function(xml) {
     });
   });
 };
-
 // --------------------------------------------------格式化对象
 function format_data(obj) {
   var msg = null;
@@ -50,34 +52,84 @@ function format_data(obj) {
     msg = obj;
   }
   return msg;
-}
+};
 exports.format_data = format_data;
-
 // --------------------------------------------------回复数据的设置
-exports.data_to_echo = function*(data) {
+// 
+// 
+// 
+// 
+var echo_init = function*(me, obj, FromUserName) {
+  var me = me;
+  var val = JSON.parse(obj.val);
+  // ------------------------------本地预设数据
+  if (obj.category == 'local') {
+    return val;
+  }
+  // ------------------------------sdk
+  else if (obj.category == 'sdk') {
+    var url_arr = me.href.split('?');
+    var articles = val.Articles;
+    articles.forEach(function(item, index) {
+      // admin
+      if (conf.wx.admin_key == obj.key) {
+        item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
+      }
+      // 其他sdk
+      else {
+        item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
+      }
+    });
+    return val;
+  }
+};
+// 
+exports.data_to_echo = function*(me, data) {
   // 预回复数据初始化
   var echo = {
     ToUserName: data.FromUserName,
     FromUserName: data.ToUserName,
     CreateTime: null,
   };
-
   // 本地预设数据
   var _local = require('./config.js').wx.local;
   // 本地sdk预设数据
   var _sdk_arr = require('./config.js').wx.sdk_arr;
   // 永久素材-other
   var _other = require('./config.js').net.permanent.arr_other;
-
-
   // 来的-data.MsgType-数据类型--event--text
-  var cinfo = data.Event || data.Content;
-
-
+  // 
+  var key = null;
+  var cinfo = null;
+  key = cinfo = data.Event || data.Content;
+  // 
+  // 第二个对象是要查询出来的字段
+  var obj = yield Data.findOne({
+      key: key
+    }
+    // , {
+    //   val: 1,
+    //   category: 1
+    // }
+  ).exec();
+  // 返回对象
+  var val = yield echo_init(me, obj, data.FromUserName);
+  // 挂载对象
+  for (var k in val) {
+    echo[k] = val[k]
+  }
+  console.log(echo);
+  return echo;
+  // 
+  // 
+  // 
+  // 
   // 本地数据存在--同步读取寻找预设数据
   if (_local.indexOf(cinfo) != -1) {
     new Core().init(_local.indexOf(cinfo), echo, 'local');
-  } else if (_sdk_arr.indexOf(cinfo) != -1) {
+  }
+  // sdk数据
+  else if (_sdk_arr.indexOf(cinfo) != -1) {
     new Core().init(_sdk_arr.indexOf(cinfo), echo, 'sdk');
   }
   // 永久-other
@@ -90,13 +142,11 @@ exports.data_to_echo = function*(data) {
   }
   return echo;
 };
-
 // --------------------------------------------------sdk素材页面的URL修正
 exports.sdk_url = function(obj, Come_data, echo) {
   var sdk_arr = conf.wx.sdk_arr;
   var url_arr = obj.href.split('?');
   var articles = echo.Articles;
-
   // 属于sdk数组
   if (sdk_arr.indexOf(Come_data.Content) != -1) {
     articles.forEach(function(item, index) {
@@ -114,8 +164,6 @@ exports.sdk_url = function(obj, Come_data, echo) {
     });
   }
 };
-
-
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {
   // 头部
@@ -126,7 +174,6 @@ exports.tpl = function(data) {
   <CreateTime>${data.CreateTime}</CreateTime>
   <MsgType><![CDATA[${data.MsgType}]]></MsgType>
   `;
-
   // 身体
   var body = '';
   // 文本
@@ -185,7 +232,6 @@ exports.tpl = function(data) {
      </item>
      `;
     })
-
     body = `
     <ArticleCount>${data.Articles.length}</ArticleCount>
     <Articles>

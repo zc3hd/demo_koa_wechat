@@ -40,7 +40,8 @@ exports.approve_echo = function*(next) {
 
     // console.log(data);
     // 给用户回复的信息
-    var echo = yield tool.data_to_echo(data);
+    // var echo = yield tool.data_to_echo(data);
+    var echo = yield tool.data_to_echo(me,data);
 
     // 地址的修正
     tool.sdk_url(me, data, echo);
@@ -49,8 +50,6 @@ exports.approve_echo = function*(next) {
     me.type = 'application/xml';
     me.body = tool.tpl(echo);
 
-    // 地址的恢复
-    tool.back_url(me, data, echo);
     return;
   }
 }

@@ -18,47 +18,6 @@ var conf = {
     // access_token的过期时间
     expires_in: null,
     // ----------------------------------------------
-    // 本地预设的收到的数据
-    local: ['subscribe', '1', '2'],
-    // 对应的回复数据
-    echo: [
-      // "subscribe"
-      {
-        MsgType: 'news',
-        Articles: [{
-          Title: 'cc',
-          Description: 'cc~s blog',
-          PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-          Url: "https://zc3hd.github.io/"
-        }, {
-          Title: 'c2',
-          Description: 'cc~s blog',
-          PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-          Url: "https://zc3hd.github.io/"
-        }]
-      },
-      // 1
-      {
-        // 回复--图文
-        MsgType: 'news',
-        Articles: [{
-          Title: 'cc',
-          Description: 'cc~s blog',
-          PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-          Url: "https://zc3hd.github.io/"
-        }, {
-          Title: 'c2',
-          Description: 'cc~s blog',
-          PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-          Url: "https://zc3hd.github.io/"
-        }]
-      },
-      // 2
-      {
-        MsgType: 'text',
-        Content: '你输入的是2'
-      },
-    ],
     // ----------------------------------------------
     // 管理员关键字
     admin_key:'admin',
