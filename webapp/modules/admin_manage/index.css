@@ -2,12 +2,15 @@ html,body{
 	width: 100%;
 	height: 100%;
 }
-#app,#login{
+
+html {
+  font-size: 62.5%;
+}
+
+#app,#login,#main{
 	width: 100%;
 	height: 100%;
 }
-
-
 
 
 /* -----------------------登录区 */
@@ -15,7 +18,9 @@ html,body{
 	position: relative;
 	background-color: rgb(38,38,38);
 	transition: all 0.3s ease-in;
+	display: none;
 }
+/* -----------------------登录区图片 */
 #login>.img{
 	display: block;
 	width: 100%;
@@ -33,8 +38,36 @@ html,body{
 	width: 100%;
 	position: absolute;
 	top:50%;
+	box-sizing: border-box;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+
+}
+#login>.input label{
+	color:#fff;
 }
 
-#login>.input>.title{
-	color:#fff;
+
+/* -----------------------主要区 */
+
+#main{
+	box-sizing: border-box;
+	padding-top: 50px;
+}
+
+/* ----nav */
+#main>.navbar{
+	width: 100%;
+	margin-bottom: 0;
+	position: absolute;
+	top:0;
+	left: 0;
+	z-index: 99999;
+}
+
+
+/* ----内容区 */
+#main>.content{
+	width: 100%;
+	height: 100%;
 }
