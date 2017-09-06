@@ -2,20 +2,31 @@
 var sha1 = require('sha1');
 var Promise = require('bluebird');
 var xml2js = require('xml2js');
-var Core = require('./core/index.js');
-var Core_async = require('./core_async/index.js');
+var fs = require('fs-extra');
+var path = require('path');
+var request = require('request');
+
+
 var conf = require('./config.js');
+var colors = require('colors');
+colors.setTheme(conf.log);
+
+
+var Token = require('./token.js');
 // 素材库
 var Data = require('../mongo/models/Data.js');
-// 
-// 
-// 
-// 
+
+
+
+
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
 };
+
+
+
 // --------------------------------------------------xml转化为对象
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
@@ -26,6 +37,9 @@ exports.xml2js = function(xml) {
     });
   });
 };
+
+
+
 // --------------------------------------------------格式化对象
 function format_data(obj) {
   var msg = null;
@@ -54,13 +68,103 @@ function format_data(obj) {
   return msg;
 };
 exports.format_data = format_data;
-// --------------------------------------------------回复数据的设置
-// 
-// 
-// 
-// 
-var echo_init = function*(me, obj, FromUserName) {
-  var me = me;
+
+
+
+
+// --------------------------------------------------素材的处理
+// 对于数据库的操作增删改查
+function Material() {}
+Material.prototype = {
+  // --------------------------------------------------临时素材
+  temp: function*(key, val, expires_in) {
+    var me = this;
+    // 有效
+    if (me.temp_valid(expires_in)) {
+      return val;
+    }
+    // 无效
+    else {
+      console.log(`>> 临时素材 字段${key} 失效`.temp);
+      // 全局票据刷新
+      yield new Token().token_reload();
+      // 素材新增
+      var newData = yield me.temp_add(key, val.MsgType)
+        // 时间修正
+      me.temp_time(newData);
+      // 本地储存数据
+      yield me.temp_save(key, newData);
+      // 本地读取
+      var localData = yield me.temp_read(key);
+      //  返回
+      return JSON.parse(localData.val);
+    }
+  },
+  // 有效性判断
+  temp_valid: function(expires_in) {
+    var me = this;
+    var now = (new Date().getTime());
+    // 有效
+    if (now < expires_in * 1) {
+      return true;
+    }
+    // 无效
+    else {
+      return false;
+    }
+  },
+  // 时间修正
+  temp_time: function(data) {
+    var me = this;
+    data.created_at = (data.created_at + 3 * 24 * 3600 - 20) * 1000;
+  },
+  // 本地存储
+  temp_save: function*(key, data) {
+    var me = this;
+    return Data.update({ key: key }, {
+        $set: {
+          val: JSON.stringify({
+            MsgType: data.type,
+            MediaId: data.media_id
+          }),
+          expires_in: data.created_at
+        }
+      })
+      .exec();
+  },
+  // 本地读取
+  temp_read: function*(key) {
+    var me = this;
+    return Data.findOne({ key: key }, 'val')
+      .exec();
+  },
+  // 新增
+  temp_add: function*(key, type) {
+    var me = this;
+    var name = fs.readdirSync(path.join(conf.temporary.path, key))[0];
+    var file_path = path.join(conf.temporary.path, key, name);
+
+    return new Promise(function(resolve, reject) {
+      request({
+        method: "POST",
+        url: `${conf.temporary.add}&access_token=${conf.wx.access_token}&type=${type}`,
+        json: true,
+        formData: {
+          media: fs.createReadStream(file_path)
+        }
+      }, function(error, data) {
+        resolve(data.body);
+      })
+    });
+  },
+};
+exports.Material = Material;
+
+
+
+
+// --------------------------------------------------回复数据的处理
+var echo_handle = function*(koa_url_come, obj, FromUserName) {
   var val = JSON.parse(obj.val);
   // ------------------------------本地预设数据
   if (obj.category == 'local') {
@@ -68,10 +172,13 @@ var echo_init = function*(me, obj, FromUserName) {
   }
   // ------------------------------sdk
   else if (obj.category == 'sdk') {
-    var url_arr = me.href.split('?');
+    // 用户回复的信息的默认路径
+    var url_arr = koa_url_come.split('?');
+    // 图文列表
     var articles = val.Articles;
+
     articles.forEach(function(item, index) {
-      // admin
+      // admin--拼接用户的ID
       if (conf.wx.admin_key == obj.key) {
         item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
       }
@@ -82,8 +189,15 @@ var echo_init = function*(me, obj, FromUserName) {
     });
     return val;
   }
+  // ------------------------------temp
+  else if (obj.category == 'temp') {
+    return yield new Material().temp(obj.key, val, obj.expires_in);
+  }
+  // ------------------------------perm
+  else if (obj.category == 'perm') {
+    return val;
+  }
 };
-// 
 exports.data_to_echo = function*(me, data) {
   // 预回复数据初始化
   var echo = {
@@ -91,79 +205,33 @@ exports.data_to_echo = function*(me, data) {
     FromUserName: data.ToUserName,
     CreateTime: null,
   };
-  // 本地预设数据
-  var _local = require('./config.js').wx.local;
-  // 本地sdk预设数据
-  var _sdk_arr = require('./config.js').wx.sdk_arr;
-  // 永久素材-other
-  var _other = require('./config.js').net.permanent.arr_other;
+
   // 来的-data.MsgType-数据类型--event--text
-  // 
-  var key = null;
-  var cinfo = null;
-  key = cinfo = data.Event || data.Content;
-  // 
+  var key = data.Event || data.Content;
+
   // 第二个对象是要查询出来的字段
+  // {
+  //   val: 1,
+  //   category: 1
+  // }
   var obj = yield Data.findOne({
-      key: key
-    }
-    // , {
-    //   val: 1,
-    //   category: 1
-    // }
-  ).exec();
-  // 返回对象
-  var val = yield echo_init(me, obj, data.FromUserName);
+    key: key
+  }).exec();
+
+  // 返回处理后的对象--me是外面访问的对象
+  var val = yield echo_handle(me, obj, data.FromUserName);
+
   // 挂载对象
   for (var k in val) {
     echo[k] = val[k]
   }
-  console.log(echo);
-  return echo;
-  // 
-  // 
-  // 
-  // 
-  // 本地数据存在--同步读取寻找预设数据
-  if (_local.indexOf(cinfo) != -1) {
-    new Core().init(_local.indexOf(cinfo), echo, 'local');
-  }
-  // sdk数据
-  else if (_sdk_arr.indexOf(cinfo) != -1) {
-    new Core().init(_sdk_arr.indexOf(cinfo), echo, 'sdk');
-  }
-  // 永久-other
-  else if (_other.indexOf(cinfo) != -1) {
-    new Core().init(_other.indexOf(cinfo), echo, 'other');
-  }
-  // 临时--需要在异步中找
-  else {
-    echo = yield new Core_async().init(cinfo, echo);
-  }
+  echo.CreateTime = new Date().getTime();
+
   return echo;
 };
-// --------------------------------------------------sdk素材页面的URL修正
-exports.sdk_url = function(obj, Come_data, echo) {
-  var sdk_arr = conf.wx.sdk_arr;
-  var url_arr = obj.href.split('?');
-  var articles = echo.Articles;
-  // 属于sdk数组
-  if (sdk_arr.indexOf(Come_data.Content) != -1) {
-    articles.forEach(function(item, index) {
-      // 已经拼接完成
-      if (item.Url.indexOf(conf.wx.url_key) != -1) {}
-      // 未拼接完成
-      else {
-        // 超级管理员--需要拼接上超级管理员的信息
-        if (conf.wx.admin_key == Come_data.Content) {
-          item.Url = url_arr[0] + item.Url + '?FromUserName=' + Come_data.FromUserName;
-        } else {
-          item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
-        }
-      }
-    });
-  }
-};
+
+
+
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {
   // 头部

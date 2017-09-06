@@ -1,18 +1,15 @@
 var tool = require('../../wechat/tool.js');
 var conf = require('../../wechat/config.js');
-var opts = conf.wx;
-
-// 获取票据
-var Token = require('../../wechat/token/token.js');
+var Token = require('../../wechat/token.js');
 // 一启动服务的时候就会拿到token
-new Token(conf).init();
+new Token().init();
 
 // ------------------------------------微信服务器的回复
 var getRawBody = require('raw-body');
 exports.approve_echo = function*(next) {
   var me = this;
   var sha = tool.sha({
-    token: opts.token,
+    token: conf.wx.token,
     timestamp: me.query.timestamp,
     nonce: me.query.nonce
   });
@@ -21,7 +18,6 @@ exports.approve_echo = function*(next) {
   // 验证不成功
   if (sha != signature) {
     me.body = "";
-    console.log('>>配置失败');
     return;
   }
   // 验证成功
@@ -38,27 +34,22 @@ exports.approve_echo = function*(next) {
     // 用户过来的信息再次格式化
     var data = tool.format_data(data_f.xml);
 
-    // console.log(data);
     // 给用户回复的信息
-    // var echo = yield tool.data_to_echo(data);
-    var echo = yield tool.data_to_echo(me,data);
+    var echo = yield tool.data_to_echo(me.href, data);
 
-    // 地址的修正
-    tool.sdk_url(me, data, echo);
-    
     me.status = 200;
     me.type = 'application/xml';
     me.body = tool.tpl(echo);
-
     return;
   }
 }
 
 
 // ---------------------------------来自微信服务器初次验证验证配置
-function approve(me, cb) {
+exports.approve_init = function*(next) {
+  var me = this;
   var sha = tool.sha({
-    token: opts.token,
+    token: conf.wx.token,
     timestamp: me.query.timestamp,
     nonce: me.query.nonce
   });
@@ -67,21 +58,12 @@ function approve(me, cb) {
   // 验证不成功
   if (sha != signature) {
     me.body = "";
-    console.log('>>配置失败');
+    console.log('>>--配置失败');
     return;
   }
   // 验证成功
   else {
-    cb();
+    me.body = me.query.echostr + "";
+    console.log('>>--配置成功');
   }
 }
-exports.approve_init = function*(next) {
-  var me = this;
-  approve(me, function() {
-    me.body = me.query.echostr + "";
-    console.log('>>配置成功');
-  });
-}
-
-
-
