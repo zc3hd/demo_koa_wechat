@@ -39,7 +39,11 @@
         });
       },
     },
-
+    // ------------------------------pc
+    admin_pc: {
+      // 新增临时
+      add_temp: "/api/material/add_temp",
+    },
   };
   conf.module["API"] = API;
 })(jQuery, window);

@@ -165,6 +165,13 @@ exports.Material = Material;
 
 // --------------------------------------------------回复数据的处理
 var echo_handle = function*(koa_url_come, obj, FromUserName) {
+  // 没有查询的数据
+  if (obj == null) {
+    var new_obj = yield Data.findOne({
+      key: "1"
+    }).exec();
+    return JSON.parse(new_obj.val);
+  }
   var val = JSON.parse(obj.val);
   // ------------------------------本地预设数据
   if (obj.category == 'local') {
@@ -209,6 +216,7 @@ exports.data_to_echo = function*(me, data) {
   // 来的-data.MsgType-数据类型--event--text
   var key = data.Event || data.Content;
 
+  // 查询数据库
   // 第二个对象是要查询出来的字段
   // {
   //   val: 1,
@@ -217,6 +225,8 @@ exports.data_to_echo = function*(me, data) {
   var obj = yield Data.findOne({
     key: key
   }).exec();
+
+
 
   // 返回处理后的对象--me是外面访问的对象
   var val = yield echo_handle(me, obj, data.FromUserName);

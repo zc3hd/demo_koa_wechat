@@ -1,0 +1,205 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+.middle:after {
+  display: inline-block;
+  width: 0;
+  height: 100%;
+  vertical-align: middle;
+  content: "";
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: relative;
+  box-sizing: border-box;
+  padding-top: 50px;
+  padding-left: 150px;
+}
+
+
+/* 内容区 */
+
+#main {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* 头部 */
+
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 50px;
+  background-color: #363636;
+}
+
+
+/* 导航 */
+
+#nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  width: 150px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  padding-top: 50px;
+}
+
+#nav>div {
+  width: 100%;
+  height: 100%;
+}
+
+#nav>div>span {
+  display: block;
+  width: 100%;
+  height: 50px;
+  background-color: #0000FF;
+  margin-bottom: 4px;
+  cursor: pointer;
+  color: #fff;
+  line-height: 50px;
+  text-align: center;
+}
+
+#nav>div>span:hover,
+#nav>div>span.active {
+  background-color: #00008B;
+}
+
+
+/* 弹窗的公共样式 */
+
+#login,
+#material {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ----login */
+
+#login>div {
+  width: 100%;
+  height: 50%;
+}
+
+
+/* ----material */
+
+#material>div {
+  width: 100%;
+  height: 36px;
+}
+
+#login>div>div,
+#material>div>div {
+  float: left;
+  height: 100%;
+  text-align: center;
+}
+
+#login>div>.info,
+#material>div>.info {
+  width: 30%;
+}
+
+#login>div>.ipt,
+#material>div>.ipt {
+  width: 70%;
+}
+
+
+/* ----login */
+
+#login>div>.ipt>input,
+#material>div>.ipt>input {
+  height: 50%;
+}
+
+
+/* ----material */
+
+#material>div>.ipt>select {
+  height: 60%;
+  width: 83%;
+}
+
+
+/* ----material news voice*/
+
+#material>.news,
+#material>.voice {
+  display: none;
+}
+
+
+/* ----material voice*/
+#material>.voice>.ipt>form{
+  width: 80%;
+  height: 100%;
+}
+#material>.voice>.ipt>form>input {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ------------------------------------------------content */
+
+#main {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 10px;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+#main>.btns {
+  width: 100%;
+  height: 24px;
+  margin-bottom: 10px;
+}
+
+#main>.btns>div {
+  width: 100px;
+  height: 100%;
+  float: left;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  line-height: 24px;
+  text-align: center;
+  color: #fff;
+}
+
+#main>.btns>div.add {
+  background-color: #00CD00;
+}
+
+#main>.btns>div.upd {
+  background-color: #00BFFF;
+}
+
+#main>.btns>div.del {
+  background-color: #FF0000;
+}

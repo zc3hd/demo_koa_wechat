@@ -74,6 +74,20 @@
         return unescape(r[2]);
       return null;
     },
+    //---------------------设置datagrid中文显示
+    set_lang_zn: function(id) {
+      //分页栏下方文字显示
+      $('#' + id + '').datagrid('getPager').pagination({
+        //页数文本框前显示的汉字
+        beforePageText: '第',
+        afterPageText: '页    共 {pages} 页',
+        displayMsg: '当前显示：从第{from}条到{to}条 共{total}条记录',
+        onBeforeRefresh: function(pageNumber, pageSize) {
+          $(this).pagination('loading');
+          $(this).pagination('loaded');
+        }
+      });
+    },
     //-------------------时间戳转日期
     formatterDateDay: function(date, flag) { //时间戳转日期
       var me = this;

@@ -8,12 +8,15 @@ var colors = require('colors');
 colors.setTheme(conf.log);
 
 
+
 // -------------------------------------2017-8-29
 var app = new Koa();
 // 数据库
 var db = require('./mongo/db.js');
 // PSOT解析
 app.use(bodyparser({ enableTypes: ['json', 'form', 'text'] }));
+
+
 // 静态文件
 app.use(staticServer(path.join(__dirname, './webapp')));
 

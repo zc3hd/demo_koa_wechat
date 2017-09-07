@@ -21,21 +21,6 @@ var conf = {
     // 配置域名的关键字
     url_key: '.me',
 
-    // 默认回复的数据
-    echo_default: {
-      MsgType: 'news',
-      Articles: [{
-        Title: '默认数据',
-        Description: 'cc~s blog',
-        PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-        Url: "https://zc3hd.github.io/"
-      }, {
-        Title: 'c2',
-        Description: 'cc~s blog',
-        PicUrl: 'http://img3.redocn.com/tupian/20150430/mantenghuawenmodianshiliangbeijing_3924704.jpg',
-        Url: "https://zc3hd.github.io/"
-      }]
-    },
   },
   // SDK
   sdk: {

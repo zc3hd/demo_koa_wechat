@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>admin_pc</title>
+  <!-- css-my -->
+  <link rel="stylesheet" href="./index.css">
+  <!-- jq -->
+  <script src="../../scripts/lib/jquery/jquery.js" type="text/javascript"></script>
+  <!-- form -->
+  <script src="../../scripts/lib/jquery-form/jquery-form.js" type="text/javascript"></script>
+  <!-- layer -->
+  <link rel="stylesheet" href="../../scripts/lib/layer/skin/layer.css">
+  <script src="../../scripts/lib/layer/layer.js" type="text/javascript"></script>
+  <!-- easyUI -->
+  <link rel="stylesheet" href="../../scripts/lib/easyui/themes/default/easyui.css">
+  <script type="text/javascript" src="../../scripts/lib/easyui/jquery.easyui.min.js"></script>
+  <!-- md5 -->
+  <script src="../../scripts/lib/md5/jquery.md5.js" type="text/javascript"></script>
+  <!-- conf -->
+  <script src="../../scripts/common/conf.js" type="text/javascript"></script>
+  <!-- api -->
+  <script src="../../scripts/api.js" type="text/javascript"></script>
+  <!-- main -->
+  <script src="./index.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="app">
+    <div id="header"></div>
+    <!-- 导航区 -->
+    <div id="nav">
+      <div>
+        <span class="active">material</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+      </div>
+    </div>
+    <!-- 内容区 -->
+    <div id="main">
+      <!-- 按钮组 -->
+      <div class="btns">
+        <div class="add">add</div>
+        <div class="upd">update</div>
+        <div class="del">delete</div>
+      </div>
+      <!-- 表格区 -->
+      <div id="list"></div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+$(function() {
+  new conf.module.Admin("list").init();
+});
+</script>
+
+</html>

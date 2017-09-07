@@ -8,21 +8,21 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "description": {
+  "devDependencies": "",
+  "dependencies": {
     "bluebird": "^3.5.0",
     "colors": "^1.1.2",
     "fs-extra": "^4.0.1",
     "koa": "^2.3.0",
+    "koa-better-body": "^3.0.4",
+    "koa-bodyparser": "^4.2.0",
+    "koa-multer": "^1.0.2",
     "koa-router": "^5.2.2",
     "koa-static": "^4.0.1",
+    "mongoose": "^4.11.10",
     "raw-body": "^2.3.0",
     "request": "^2.81.0",
     "sha1": "^1.1.1",
     "xml2js": "^0.4.17"
-  },
-  "devDependencies": "",
-  "dependencies": {
-    "koa-bodyparser": "^4.2.0",
-    "mongoose": "^4.11.10"
   }
 }

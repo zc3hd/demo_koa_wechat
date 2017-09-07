@@ -141,3 +141,10 @@ setTimeout(function() {
 * 临时素材和本地素材的迁入到数据库
 * token.js--只操作token和ticket的更新
 * tool.js里操作素材
+
+-------------------------------
+
+* 2017-9-7
+* "koa-router": "^5.2.2",这个版本有问题
+* 上传文件做不了。koa这个不好弄
+* https://github.com/guileen/koa-better-body
