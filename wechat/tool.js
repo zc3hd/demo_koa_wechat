@@ -18,6 +18,20 @@ var Data = require('../mongo/models/Data.js');
 
 
 
+// get---路径解析
+exports.parseUrl = function(url) {
+  var str = url.slice(2);
+  var arr = str.split("&");
+  var obj = {};
+  var item = null;
+  arr.forEach(function(element, index) {
+    item = element.split("=");
+    obj[item[0]] = item[1];
+  });
+  return obj
+};
+
+
 
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
@@ -164,10 +178,10 @@ exports.Material = Material;
 
 
 // --------------------------------------------------回复数据的处理
-var echo_handle = function*(koa_url_come, obj, FromUserName) {
+var echo_handle = async function(koa_url_come, obj, FromUserName) {
   // 没有查询的数据
   if (obj == null) {
-    var new_obj = yield Data.findOne({
+    var new_obj = await Data.findOne({
       key: "1"
     }).exec();
     return JSON.parse(new_obj.val);
@@ -177,35 +191,37 @@ var echo_handle = function*(koa_url_come, obj, FromUserName) {
   if (obj.category == 'local') {
     return val;
   }
-  // ------------------------------sdk
-  else if (obj.category == 'sdk') {
-    // 用户回复的信息的默认路径
-    var url_arr = koa_url_come.split('?');
-    // 图文列表
-    var articles = val.Articles;
+  // // ------------------------------sdk
+  // else if (obj.category == 'sdk') {
+  //   // 用户回复的信息的默认路径
+  //   var url_arr = koa_url_come.split('?');
+  //   // 图文列表
+  //   var articles = val.Articles;
 
-    articles.forEach(function(item, index) {
-      // admin--拼接用户的ID
-      if (conf.wx.admin_key == obj.key) {
-        item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
-      }
-      // 其他sdk
-      else {
-        item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
-      }
-    });
-    return val;
-  }
-  // ------------------------------temp
-  else if (obj.category == 'temp') {
-    return yield new Material().temp(obj.key, val, obj.expires_in);
-  }
-  // ------------------------------perm
-  else if (obj.category == 'perm') {
-    return val;
-  }
+  //   articles.forEach(function(item, index) {
+  //     // admin--拼接用户的ID
+  //     if (conf.wx.admin_key == obj.key) {
+  //       item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
+  //     }
+  //     // 其他sdk
+  //     else {
+  //       item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
+  //     }
+  //   });
+  //   return val;
+  // }
+  // // ------------------------------temp
+  // else if (obj.category == 'temp') {
+  //   return yield new Material().temp(obj.key, val, obj.expires_in);
+  // }
+  // // ------------------------------perm
+  // else if (obj.category == 'perm') {
+  //   return val;
+  // }
 };
-exports.data_to_echo = function*(me, data) {
+
+
+exports.data_to_echo = async function(koa_url_come, data) {
   // 预回复数据初始化
   var echo = {
     ToUserName: data.FromUserName,
@@ -222,14 +238,14 @@ exports.data_to_echo = function*(me, data) {
   //   val: 1,
   //   category: 1
   // }
-  var obj = yield Data.findOne({
+  var obj = await Data.findOne({
     key: key
   }).exec();
 
 
 
   // 返回处理后的对象--me是外面访问的对象
-  var val = yield echo_handle(me, obj, data.FromUserName);
+  var val = await echo_handle(koa_url_come, obj, data.FromUserName);
 
   // 挂载对象
   for (var k in val) {
