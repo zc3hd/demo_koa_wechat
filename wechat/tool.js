@@ -16,9 +16,6 @@ var Token = require('./token.js');
 var Data = require('../mongo/models/Data.js');
 // 用户组
 var User = require('../mongo/models/User.js');
-
-
-
 // --------------------------------------------------路径解析
 exports.parseUrl = function(url) {
   var str = url.slice(2);
@@ -31,13 +28,11 @@ exports.parseUrl = function(url) {
   });
   return obj
 };
-
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
 };
-
 // --------------------------------------------------xml转化为对象
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
@@ -48,9 +43,6 @@ exports.xml2js = function(xml) {
     });
   });
 };
-
-
-
 // --------------------------------------------------格式化对象
 function format_data(obj) {
   var msg = null;
@@ -79,10 +71,6 @@ function format_data(obj) {
   return msg;
 };
 exports.format_data = format_data;
-
-
-
-
 // --------------------------------------------------素材的处理
 // 对于素材的操作增删改查
 function Material() {}
@@ -95,18 +83,9 @@ Material.prototype = {
     var limit = parseInt(obj.rows);
     // 跳过
     var skip = (obj.page - 1) * limit;
-
     // 查询数据
-    var data = await Data
-      .find()
-      .limit(limit)
-      .skip(skip)
-      .exec();
-
-    var count = await Data
-      .count()
-      .exec();
-
+    var data = await Data.find().limit(limit).skip(skip).sort({ key: 1 }).exec();
+    var count = await Data.count().exec();
     return {
       total: count,
       rows: data
@@ -125,11 +104,11 @@ Material.prototype = {
       // 全局票据刷新
       await new Token().token_reload();
       // 素材新增
-      var newData = await me.temp_add_online(key, val.MsgType)
-        // 时间修正
+      var newData = await me.temp_add_online(key, val.MsgType);
+      // 时间修正
       me.temp_time(newData);
       // 本地储存数据
-      await me.temp_save(key, newData);
+      await me.temp_upd(key, newData);
       // 本地读取
       var localData = await me.temp_read(key);
       //  返回
@@ -154,32 +133,46 @@ Material.prototype = {
     var me = this;
     data.created_at = (data.created_at + 3 * 24 * 3600 - 20) * 1000;
   },
-  // 本地存储
-  temp_save: async function(key, data) {
+  // 本地数据库修正
+  temp_upd: async function(key, data) {
     var me = this;
-    return Data.update({ key: key }, {
-        $set: {
-          val: JSON.stringify({
-            MsgType: data.type,
-            MediaId: data.media_id
-          }),
-          expires_in: data.created_at
-        }
-      })
-      .exec();
+    return Data.update({
+      key: key
+    }, {
+      $set: {
+        val: JSON.stringify({
+          MsgType: data.type,
+          MediaId: data.media_id
+        }),
+        expires_in: data.created_at
+      }
+    }).exec();
   },
   // 本地读取
   temp_read: async function(key) {
     var me = this;
-    return Data.findOne({ key: key }, 'val')
-      .exec();
+    return Data.findOne({
+      key: key
+    }, 'val').exec();
+  },
+  // 本地数据库保存
+  temp_save: async function(data, newData) {
+    var me = this;
+    return Data.create({
+      key: data.key,
+      val: JSON.stringify({
+        MsgType: data.MsgType,
+        MediaId: newData.media_id
+      }),
+      category: data.category,
+      expires_in: newData.created_at
+    }).then();
   },
   // 线上新增
   temp_add_online: async function(key, type) {
     var me = this;
     var name = fs.readdirSync(path.join(conf.temporary.path, key))[0];
     var file_path = path.join(conf.temporary.path, key, name);
-
     return new Promise(function(resolve, reject) {
       request({
         method: "POST",
@@ -197,8 +190,9 @@ Material.prototype = {
   _temp_add_local: async function(req) {
     var me = this;
     // 发射器
-    var _emmiter = new Busboy({ headers: req.headers });
-
+    var _emmiter = new Busboy({
+      headers: req.headers
+    });
     // 用于收集字段值
     var obj = {};
     // 传过来 fieldname--字段名  val--传过来的值
@@ -207,39 +201,29 @@ Material.prototype = {
       // 挂载数据
       obj[fieldname] = val;
     });
-
     // 要保存的地址
     var test_path = path.join(conf.temporary.path, conf.temporary.temp);
-
     return new Promise((resolve, reject) => {
       _emmiter.on('file', function(fieldname, file, filename, encoding, mimetype) {
         // 确认的最终保存地址
         var saveTo = path.join(path.join(test_path, filename));
         file.pipe(fs.createWriteStream(saveTo));
-
         // 挂载数据
         obj[fieldname] = filename;
-
         // console.log('File [' + fieldname + ']: filename: ' + filename);
-
         // file.on('data', function(data) {
         //   // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
         // });
-
         // file.on('end', function() {
-
         // })
       });
-
       _emmiter.on('finish', function() {
         // 全部完毕后--传递数据
         resolve(obj);
       });
-
       _emmiter.on('error', function(err) {
         reject(err)
       });
-
       req.pipe(_emmiter);
     });
   },
@@ -251,44 +235,54 @@ Material.prototype = {
       var key_path = path.join(conf.temporary.path, data.key);
       // 临时目录
       var temp_path = path.join(conf.temporary.path, conf.temporary.temp);
-
       // 目标路径
       var key_file = null;
       // 临时路径
       var temp_file = null;
-
       // 生成目录
-      fs.mkdir(key_path)
-        .then(function() {
-          if (data.MsgType == 'video') {
-            key_file = path.join(key_path, data.video_file);
-            temp_file = path.join(temp_path, data.video_file);
-          }
-          return fs.move(temp_file, key_file);
-        })
-        .then(function() {
-          resolve({
-            a: "asda"
-          });
-        });
+      fs.mkdir(key_path).then(function() {
+        // 上传的视频
+        if (data.MsgType == 'video') {
+          key_file = path.join(key_path, data.video_file);
+          temp_file = path.join(temp_path, data.video_file);
+        }
+        // 上传的音频
+        else if (data.MsgType == 'voice') {
+          key_file = path.join(key_path, data.voice_file);
+          temp_file = path.join(temp_path, data.voice_file);
+        }
+        // 上传的图片
+        else if (data.MsgType == 'image') {
+          key_file = path.join(key_path, data.image_file);
+          temp_file = path.join(temp_path, data.image_file);
+        }
+        return fs.move(temp_file, key_file);
+      }).then(function() {
+        resolve();
+      });
     });
   },
-
-
-
-
-
-
-
-
-
-
-
-
+  // 线上和本地数据库新增
+  _temp_online_save: async function(data) {
+    var me = this;
+    // var obj = {
+    //   key: '6',
+    //   category: 'temp',
+    //   MsgType: 'voice',
+    //   voice_file: 'index.mp3'
+    // };
+    // 全局票据刷新
+    await new Token().token_reload();
+    // 素材新增
+    var newData = await me.temp_add_online(data.key, data.MsgType);
+    // 时间修正
+    me.temp_time(newData);
+    // 本地保存
+    await me.temp_save(data, newData);
+    console.log(`>> 临时素材 字段${data.key} 本地保存成功`.temp);
+  }
 };
 exports.Material = Material;
-
-
 // --------------------------------------------------回复数据的处理
 var echo_handle = async function(url_come, obj, FromUserName) {
   var koa_url_come = conf.wx.http + url_come;
@@ -310,7 +304,6 @@ var echo_handle = async function(url_come, obj, FromUserName) {
     var url_arr = koa_url_come.split('?');
     // 图文列表
     var articles = val.Articles;
-
     articles.forEach(function(item, index) {
       // admin--拼接用户的ID
       if (conf.wx.admin_key == obj.key) {
@@ -339,10 +332,8 @@ exports.data_to_echo = async function(koa_url_come, data) {
     FromUserName: data.ToUserName,
     CreateTime: null,
   };
-
   // 来的-data.MsgType-数据类型--event--text
   var key = data.Event || data.Content;
-
   // 查询数据库
   // 第二个对象是要查询出来的字段
   // {
@@ -352,20 +343,15 @@ exports.data_to_echo = async function(koa_url_come, data) {
   var obj = await Data.findOne({
     key: key
   }).exec();
-
   // 返回处理后的对象--me是外面访问的对象
   var val = await echo_handle(koa_url_come, obj, data.FromUserName);
-
   // 挂载对象
   for (var k in val) {
     echo[k] = val[k]
   }
   echo.CreateTime = new Date().getTime();
-
   return echo;
 };
-
-
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {
   // 头部
@@ -445,20 +431,13 @@ exports.tpl = function(data) {
   var footer = '</xml>';
   return `${header}${body}${footer}`
 };
-
-
 // --------------------------------------------------SDK验证
 exports.signature = async function(url) {
   await new Token().ticket_reload();
   var jsapi_ticket = conf.sdk.api_ticket;
   var noncestr = Math.random().toString(36).substr(2, 15);
   var timestamp = parseInt(new Date().getTime() / 1000, 10) + '';
-  var arr = [
-    'jsapi_ticket=' + jsapi_ticket,
-    'noncestr=' + noncestr,
-    'timestamp=' + timestamp,
-    'url=' + url
-  ];
+  var arr = ['jsapi_ticket=' + jsapi_ticket, 'noncestr=' + noncestr, 'timestamp=' + timestamp, 'url=' + url];
   var str = arr.sort().join('&');
   var signature = sha1(str);
   return {
@@ -468,8 +447,6 @@ exports.signature = async function(url) {
     appId: conf.wx.appID
   }
 };
-
-
 // --------------------------------------------------管理员的操作
 function Admin() {}
 Admin.prototype = {
@@ -477,10 +454,9 @@ Admin.prototype = {
   pc_login: async function(opts) {
     var me = this;
     me.opts = opts;
-    var user = await User
-      .findOne({ name: me.opts.name })
-      .exec();
-
+    var user = await User.findOne({
+      name: me.opts.name
+    }).exec();
     var echo = me.login_echo(user);
     return echo;
   },

@@ -14,7 +14,7 @@
   Admin.prototype = {
     init: function() {
       var me = this;
-      // me.nav();
+      me.nav();
       me.add_material();
 
       // 列表事件
@@ -25,8 +25,8 @@
     event: function() {
       var me = this;
       me.add();
-      me.upd();
-      me.del();
+      // me.upd();
+      // me.del();
     },
     add: function(argument) {
       var me = this;
@@ -155,7 +155,7 @@
         area: ['300px', '350px'],
         anim: 1,
         shade: 0.6,
-        closeBtn: 0,
+        // closeBtn: 0,
         content: str,
         btn: ['add'],
         success: function(layero, index) {
@@ -163,7 +163,8 @@
           me.add_load_event();
         },
         yes: function(index, layero) {
-          me.add_yes();
+          var load = layer.load();
+          me.add_yes(index,load);
         },
         btn2: function(index, layero) {},
 
@@ -373,7 +374,7 @@
       return formData;
     },
     // 确认添加
-    add_yes: function(argument) {
+    add_yes: function(index,load) {
       var me = this;
 
       // 验证后的信息
@@ -389,7 +390,11 @@
         contentType: false,
         beforeSend: function() {},
         success: function(data) {
-          console.log(data);
+          if (data.ret) {
+            layer.close(index);
+            layer.close(load);
+            me.datagrid.reload();
+          }
         },
         error: function(data) {
           console.log("error");
@@ -562,7 +567,7 @@
     list_init: function() {
       var me = this;
       var height = $('#main').height() - 54;
-      me.list.datagrid({
+      me.datagrid =  me.list.datagrid({
         url: me.url,
         method: 'post',
         title: me.title,

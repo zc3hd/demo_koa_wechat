@@ -49,17 +49,16 @@ router.post('/admin/material/list', async function(ctx, next) {
 // pc 添加临时素材
 router.post('/admin/material/add_temp', async function(ctx, next) {
 
+  // 上传到临时文件夹
   var data = await new tool.Material()._temp_add_local(ctx.req);
-  var obj = await new tool.Material()._temp_key(data);
-  // const serverPath = path.join(__dirname, '../cc');
+  
+  // 转移到key的文件夹
+  await new tool.Material()._temp_key(data);
 
-  // console.log(ctx.req.body);
-  // var data = await uploadFile(ctx, {
-  //   fileType: 'album',
-  //   path: serverPath
-  // });
+  // 线上和本地数据库新增
+  await new tool.Material()._temp_online_save(data);
 
-  ctx.body = obj || { a: 1 };
+  ctx.body =  { ret: 1 };
 });
 
 
