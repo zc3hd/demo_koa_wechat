@@ -19,6 +19,7 @@ var app = new Koa();
 app.use(bodyparser({ enableTypes: ['json', 'form', 'text'] }));
 // 静态文件
 app.use(staticServer(path.join(__dirname, './webapp')));
+
 // logger
 // app.use(async(ctx, next) => {
 //   const start = new Date()
@@ -32,6 +33,9 @@ app.use(staticServer(path.join(__dirname, './webapp')));
 var wx = require('./routes/wx.js');
 app.use(wx.routes(), wx.allowedMethods());
 
+// ------------------------------------------api
+var api = require('./routes/api.js');
+app.use(api.routes(), api.allowedMethods());
 
 
 
@@ -48,25 +52,3 @@ db.once('open', function(callback) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// -------------------------------------2017-8-25
-// // 微信服务器验证我们
-// var wx = require('./wechat/wx.js');
-// // 配置项
-// var conf = require('./wechat/config.js');
-// // router
-
-// var app = new Koa();
-
-// // 
-// app.use(wx(conf));

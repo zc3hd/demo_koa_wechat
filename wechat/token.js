@@ -133,7 +133,7 @@ Token.prototype = {
       });
   },
   // 全局刷新
-  token_reload: function() {
+  token_reload: async function() {
     var me = this;
     return new Promise(function(resolve, reject) {
       me.token_read(function() {
@@ -253,7 +253,7 @@ Token.prototype = {
       });
   },
   // 全局刷新
-  ticket_reload: function() {
+  ticket_reload: async function() {
     var me = this;
     return new Promise(function(resolve, reject) {
       me.token_read(function() {

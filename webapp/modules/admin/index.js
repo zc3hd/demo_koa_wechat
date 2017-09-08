@@ -1,7 +1,7 @@
 (function($, window) {
   function Admin(id) {
     var me = this;
-    me.API = new conf.module.API();
+    me.API = new conf.module.API().admin;
 
     // id
     me.id = id;
@@ -14,8 +14,9 @@
   Admin.prototype = {
     init: function() {
       var me = this;
-      me.nav();
+      // me.nav();
       me.add_material();
+
       // 列表事件
       // me.event();
       // me.login();
@@ -49,7 +50,7 @@
           </div>
         </div>
 
-        <!-- 存储类别 -->
+        <!-- 存储大类 -->
         <div>
           <div class="middle info">category</div>
           <div class="middle ipt">
@@ -60,7 +61,8 @@
             </select>
           </div>
         </div>
-        <!-- 信息类型 -->
+
+        <!-- 具体选择 -->
         <div class="MsgType">
           <div class="middle info">MsgType</div>
           <div class="middle ipt">
@@ -109,64 +111,82 @@
         <div class="voice">
           <div class="middle info">voice</div>
           <div class="middle ipt">
-            <form action="" method="post" enctype="multipart/form-data" id="form_voice">  
-              <input type="file" id="voice"> 
-            </form>
+            <div class="lable_file_ipt">点击选择文件</div>
+            <input type="file" id="voice_file" class="inp_file">
           </div>
         </div>
-        
+
+        <!-- 视频 -->
+        <div class="video">
+          <div class="middle info">Title</div>
+          <div class="middle ipt">
+            <input type="text" id="video_Title" placeholder="video_Title">
+          </div>
+        </div>
+        <div class="video">
+          <div class="middle info">Description</div>
+          <div class="middle ipt">
+            <input type="text" id="video_Description" placeholder="video_Description">
+          </div>
+        </div>
+        <div class="video">
+          <div class="middle info">video</div>
+          <div class="middle ipt">
+            <div class="lable_file_ipt">点击选择文件</div>
+            <input type="file" id="video_file" class="inp_file">
+          </div>
+        </div>
+
+
+        <!-- 图片 -->
+        <div class="image">
+          <div class="middle info">image</div>
+          <div class="middle ipt">
+            <div class="lable_file_ipt">点击选择文件</div>
+            <input type="file" id="image_file" class="inp_file">
+          </div>
+        </div>
       </div>
       `;
-
-
 
       layer.open({
         type: 1,
         title: 'add material',
-        area: ['300px', '500px'],
+        area: ['300px', '350px'],
         anim: 1,
         shade: 0.6,
         closeBtn: 0,
         content: str,
-        btn: ['add', 'cancel'],
-        yes: function(index, layero) {
-
-          $("#form_voice").ajaxSubmit({
-            dataType: "json",
-            contentType: "application/x-www-form-urlencoded; charset=utf-8",
-            scriptCharset: 'utf-8',
-            // data: {},
-            success: function(data) {
-              console.log(data);
-            },
-            error: function() {}
-          });
-        },
-        btn2: function(index, layero) {
-
-        },
+        btn: ['add'],
         success: function(layero, index) {
-          console.log(me.API.admin_pc.add_temp);
-          $('#form_voice').attr('action', me.API.admin_pc.add_temp);
-          me.add_material_layer();
+          // 添加素材弹窗的一些事件
+          me.add_load_event();
         },
+        yes: function(index, layero) {
+          me.add_yes();
+        },
+        btn2: function(index, layero) {},
+
       });
     },
     // 添加素材弹窗的一些事件
-    add_material_layer: function(argument) {
+    add_load_event: function(argument) {
       var me = this;
-      // 类别选择
+      // 大的类别的选择
       $('#category').off().on('change', function() {
         var category = $('#category').val();
         // 本地--图文和文本
         if (category == 'local') {
-          // 类型
+
+          // 类型区
           $('#material>.MsgType').show();
+
+          // 具体类型选项
           $('#MsgType').html(`
-            <option value='text'>text</option>
-            <option value='news'>news</option>
+              <option value='text'>text</option>
+              <option value='news'>news</option>
             `);
-          // 默认文本显示
+          // 输入区
           $('#material>.text').show(100);
           $('#material>.news').hide(100);
           // 
@@ -178,13 +198,15 @@
         else if (category == 'temp') {
           // 类型
           $('#material>.MsgType').show();
+
+          // 具体类型选项
           $('#MsgType').html(`
-            <option value='voice'>voice</option>
-            <option value='video'>video</option>
-            <option value='image'>image</option>
+              <option value='voice'>voice</option>
+              <option value='video'>video</option>
+              <option value='image'>image</option>
             `);
 
-          // 默认音乐显示
+          // 输入区
           $('#material>.voice').show(100);
           $('#material>.video').hide(100);
           $('#material>.image').hide(100);
@@ -194,24 +216,187 @@
         }
         // sdk
         else if (category == 'sdk') {
+          // 类型--没有了
           $('#material>.MsgType').hide(100);
+
+          // 输入区--默认图文
+          $('#material>.voice').hide(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').hide(100);
+          // 
+          $('#material>.text').hide(100);
+          $('#material>.news').show(100);
         }
       });
-      // 信息类型
+
+      // 默认是选了voice
+      me._MsgType = "voice";
+      // 具体选择类型
       $('#MsgType').off().on('change', function() {
         var MsgType = $('#MsgType').val();
-        // 本地--图文和文本
+
+        me._MsgType = MsgType;
+        // 文本
         if (MsgType == 'text') {
           $('#material>.text').show(100);
           $('#material>.news').hide(100);
+          $('#material>.voice').hide(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').hide(100);
         }
         // 图文
         else if (MsgType == 'news') {
           $('#material>.text').hide(100);
           $('#material>.news').show(100);
+          $('#material>.voice').hide(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').hide(100);
+        }
+        // 音频
+        else if (MsgType == 'voice') {
+          $('#material>.text').hide(100);
+          $('#material>.news').hide(100);
+          $('#material>.voice').show(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').hide(100);
+        }
+        // 视频
+        else if (MsgType == 'video') {
+          $('#material>.text').hide(100);
+          $('#material>.news').hide(100);
+          $('#material>.voice').hide(100);
+          $('#material>.video').show(100);
+          $('#material>.image').hide(100);
+        }
+        // 图片
+        else if (MsgType == 'image') {
+          $('#material>.text').hide(100);
+          $('#material>.news').hide(100);
+          $('#material>.voice').hide(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').show(100);
+        }
+      });
+      // 防ipt-file div的事件
+      $('#material .lable_file_ipt').off().on('click', function(e) {
+        $('#' + me._MsgType + '_file').click();
+        $('#' + me._MsgType + '_file')
+          .off()
+          .on("change", function() {
+            var file_obj = $('#' + me._MsgType + '_file')[0].files[0];
+            $(e.currentTarget).html(file_obj.name);
+          });
+      });
+    },
+    // 添加确认之前的验证
+    add_yes_valid: function() {
+      var me = this;
+      var obj = {};
+
+      var key = $('#key').val();
+      var category = $('#category').val();
+      var MsgType = $('#MsgType').val();
+
+      // 文本
+      if (MsgType == 'text') {
+        var Content = $('#Content').val();
+        obj = {
+          key: key,
+          category: category,
+          MsgType: MsgType,
+          Content: Content
+        };
+      }
+      // 图文
+      else if (MsgType == 'news') {
+        var Title = $('#Title').val();
+        var Description = $('#Description').val();
+        var PicUrl = $('#PicUrl').val();
+        var Url = $('#Url').val();
+        obj = {
+          key: key,
+          category: category,
+          MsgType: MsgType,
+          Title: Title,
+          Description: Description,
+          PicUrl: PicUrl,
+          Url: Url
+        };
+      }
+      // 音频
+      else if (MsgType == 'voice') {
+        obj = {
+          key: key,
+          category: category,
+          MsgType: MsgType,
+          voice_file: $('#' + me._MsgType + '_file')[0].files[0]
+        };
+      }
+      // 视频
+      else if (MsgType == 'video') {
+        var video_Title = $('#video_Title').val();
+        var video_Description = $('#video_Description').val();
+        obj = {
+          key: key,
+          category: category,
+          MsgType: MsgType,
+          video_Title: video_Title,
+          video_Description: video_Description,
+          video_file: $('#' + me._MsgType + '_file')[0].files[0]
+        };
+      }
+      // 图片
+      else if (MsgType == 'image') {
+        obj = {
+          key: key,
+          category: category,
+          MsgType: MsgType,
+          image_file: $('#' + me._MsgType + '_file')[0].files[0]
+        };
+      }
+
+      // 验证是否为空
+      var formData = new FormData();
+      for (var k in obj) {
+        // 空
+        if (!obj[k]) {
+          layer.msg(k + '不能为空');
+          return;
+        }
+        // 有
+        else  {
+          formData.append(k, obj[k]);
+        }
+      }
+      console.log(obj);
+      console.log(formData);
+      return formData;
+    },
+    // 确认添加
+    add_yes: function(argument) {
+      var me = this;
+
+      // 验证后的信息
+      var formData = me.add_yes_valid();
+      // 提交
+      $.ajax({
+        url: me.API.add_temp,
+        type: 'POST',
+        data: formData,
+        // 告诉jQuery不要去处理发送的数据
+        processData: false,
+        // 告诉jQuery不要去设置Content-Type请求头
+        contentType: false,
+        beforeSend: function() {},
+        success: function(data) {
+          console.log(data);
+        },
+        error: function(data) {
+          console.log("error");
         }
       });
     },
+
     // ---------------------------------------------nav
     nav: function() {
       var me = this;
@@ -235,6 +420,16 @@
       me.list_url_title(key);
       me.list_init();
     },
+
+
+
+
+
+
+
+
+
+
     // ---------------------------------------------登录
     login: function() {
       var me = this;
@@ -285,7 +480,7 @@
         return;
       }
 
-      me.API.admin.login({
+      me.API.pc_login({
           name: name,
           password: $.md5(ps),
           FromUserName: FromUserName
@@ -313,7 +508,7 @@
       var me = this;
       // 素材管理
       if (key == 'material') {
-        me.url = '/api/material/all';
+        me.url = me.API.material_list;
         me.title = key;
         me.list_title = [
           [

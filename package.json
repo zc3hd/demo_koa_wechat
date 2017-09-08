@@ -11,6 +11,7 @@
   "devDependencies": "",
   "dependencies": {
     "bluebird": "^3.5.0",
+    "busboy": "^0.2.14",
     "colors": "^1.1.2",
     "fs-extra": "^4.0.1",
     "koa": "^2.2.0",
