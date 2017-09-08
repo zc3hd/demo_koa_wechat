@@ -10,7 +10,7 @@
   win.cons = function(obj) {
     // obj.data = JSON.stringify(obj.data);
     $.ajax({
-      url: "/web_console",
+      url: "/api/console",
       dataType: "json",
       type: "POST",
       data: obj

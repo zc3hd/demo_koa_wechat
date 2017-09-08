@@ -20,7 +20,8 @@ var conf = {
 
     // 配置域名的关键字
     url_key: '.me',
-
+    // 我的域名
+    http: "https://arminc.pagekite.me"
   },
   // SDK
   sdk: {
@@ -35,6 +36,8 @@ var conf = {
   temporary: {
     // 素材路径
     path: path.join(__dirname, './material/temporary'),
+    // 上传文件的临时目录名
+    temp: 'temp',
     // 新增url
     add: "https://api.weixin.qq.com/cgi-bin/media/upload?",
   },
