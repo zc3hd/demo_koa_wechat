@@ -36,7 +36,6 @@ router.get('/', async(ctx, next) => {
 
 // -----------微信服务器的回复
 router.post('/', async function(ctx, next) {
-
   // 路径解析
   var obj = tool.parseUrl(ctx.url);
 
@@ -68,6 +67,7 @@ router.post('/', async function(ctx, next) {
 
     // 给用户回复的信息
     var echo = await tool.data_to_echo(ctx.url, data);
+
 
     ctx.res.status = 200;
     ctx.res.type = 'application/xml';
