@@ -78,13 +78,14 @@ Material.prototype = {
   // pc （外用）-------------------------------------------全部素材
   list: async function(obj) {
     var me = this;
-    console.log(obj);
     // 展示
     var limit = parseInt(obj.rows);
     // 跳过
     var skip = (obj.page - 1) * limit;
     // 查询数据
-    var data = await Data.find().limit(limit).skip(skip).sort({ key: 1 }).exec();
+    var data = await Data.find().limit(limit).skip(skip).sort({
+      key: 1
+    }).exec();
     var count = await Data.count().exec();
     return {
       total: count,
@@ -280,7 +281,43 @@ Material.prototype = {
     // 本地保存
     await me.temp_save(data, newData);
     console.log(`>> 临时素材 字段${data.key} 本地保存成功`.temp);
-  }
+  },
+  // --------------------------------------------------文本和news
+  _local_sdk_save: function(data) {
+    var me = this;
+    var val = null;
+    // 文本
+    if (data.MsgType == 'text') {
+      val = JSON.stringify({
+        MsgType: data.MsgType,
+        Content: data.Content
+      });
+    }
+    // 图文
+    else {
+      val = JSON.stringify({
+        MsgType: data.MsgType,
+        Articles: [{
+          Title: data.Title,
+          Description: data.Description,
+          PicUrl: data.PicUrl,
+          Url: data.Url
+        }]
+      });
+    }
+    return Data.create({
+      key: data.key,
+      val: val,
+      category: data.category,
+    }).then();
+  },
+  // --------------------------------------------------删除
+  del:function(data){
+    var me = this;
+    return Data.remove({
+      key: data.key,
+    }).then();
+  },
 };
 exports.Material = Material;
 // --------------------------------------------------回复数据的处理

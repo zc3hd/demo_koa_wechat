@@ -36,31 +36,27 @@ router.post('/admin/material/list', async function(ctx, next) {
   var data = await new tool.Material().list(ctx.request.body);
   ctx.body = data;
 });
-
-
-
-
-
-
-
-
-
-
 // pc 添加临时素材
 router.post('/admin/material/add_temp', async function(ctx, next) {
-
   // 上传到临时文件夹
   var data = await new tool.Material()._temp_add_local(ctx.req);
-  
   // 转移到key的文件夹
   await new tool.Material()._temp_key(data);
-
   // 线上和本地数据库新增
   await new tool.Material()._temp_online_save(data);
-
   ctx.body =  { ret: 1 };
 });
-
+// pc 添加文本 和 news
+router.post('/admin/material/add_text_news', async function(ctx, next) {
+  // 添加 本地预设 或者 sdk
+  new tool.Material()._local_sdk_save(ctx.request.body);
+  ctx.body = { ret: 1 };
+});
+// pc 删除 素材
+router.post('/admin/del_material', async function(ctx, next) {
+  await new tool.Material().del(ctx.request.body);
+  ctx.body = { ret: 1 };
+});
 
 
 

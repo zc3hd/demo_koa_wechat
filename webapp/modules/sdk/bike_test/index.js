@@ -1,7 +1,7 @@
 (function($, window) {
   function Map_main(id) {
     var me = this;
-    me.api = new conf.module.API();
+    me.api = new conf.module.API().sdk;
     me.map_id = id;
     // 地图marker
     me.conf = {

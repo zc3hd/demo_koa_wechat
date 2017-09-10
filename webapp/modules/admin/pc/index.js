@@ -2,33 +2,29 @@
   function Admin(id) {
     var me = this;
     me.API = new conf.module.API().admin;
-
     // id
     me.id = id;
     // 列表容器
     me.list = $('#' + id);
-
     // 选择到的数据
     me.row = null;
   };
   Admin.prototype = {
     init: function() {
       var me = this;
+      // 侧边栏导航
       me.nav();
-      me.add_material();
-
       // 列表事件
-      // me.event();
+      me.event();
       // me.login();
     },
     // ---------------------------------------------event
     event: function() {
       var me = this;
       me.add();
-      // me.upd();
-      // me.del();
+      me.del();
     },
-    add: function(argument) {
+    add: function() {
       var me = this;
       $('#main .add').off().on('click', function(argument) {
         // 素材
@@ -37,10 +33,19 @@
         }
       });
     },
+    del: function() {
+      var me = this;
+      $('#main .del').off().on('click', function(argument) {
+        // 素材
+        if (me.key == 'material') {
+          me.del_material();
+        }
+      });
+    },
+    // ----------------------------------------------素材管理
     // 添加素材
     add_material: function() {
       var me = this;
-
       var str = `
       <div id="material">
         <div>
@@ -148,40 +153,45 @@
         </div>
       </div>
       `;
-
       layer.open({
         type: 1,
         title: 'add material',
         area: ['300px', '350px'],
         anim: 1,
         shade: 0.6,
-        // closeBtn: 0,
         content: str,
         btn: ['add'],
         success: function(layero, index) {
           // 添加素材弹窗的一些事件
-          me.add_load_event();
+          me.add_material_load_event();
         },
         yes: function(index, layero) {
           var load = layer.load();
-          me.add_yes(index,load);
+          me.add_material_yes()
+            // 
+            .done(function(data) {
+              if (data.ret) {
+                layer.close(index);
+                layer.close(load);
+                me.list.datagrid('reload');
+              }
+            });
         },
         btn2: function(index, layero) {},
-
       });
     },
     // 添加素材弹窗的一些事件
-    add_load_event: function(argument) {
+    add_material_load_event: function() {
       var me = this;
+      // 默认是选了text
+      me._MsgType = "text";
       // 大的类别的选择
       $('#category').off().on('change', function() {
         var category = $('#category').val();
         // 本地--图文和文本
         if (category == 'local') {
-
           // 类型区
           $('#material>.MsgType').show();
-
           // 具体类型选项
           $('#MsgType').html(`
               <option value='text'>text</option>
@@ -194,19 +204,19 @@
           $('#material>.voice').hide(100);
           $('#material>.video').hide(100);
           $('#material>.image').hide(100);
+          // 默认选择是text
+          me._MsgType = "text";
         }
         // -临时
         else if (category == 'temp') {
           // 类型
           $('#material>.MsgType').show();
-
           // 具体类型选项
           $('#MsgType').html(`
               <option value='voice'>voice</option>
               <option value='video'>video</option>
               <option value='image'>image</option>
             `);
-
           // 输入区
           $('#material>.voice').show(100);
           $('#material>.video').hide(100);
@@ -214,12 +224,13 @@
           // 
           $('#material>.text').hide(100);
           $('#material>.news').hide(100);
+          // 默认选择是text
+          me._MsgType = "voice";
         }
         // sdk
         else if (category == 'sdk') {
           // 类型--没有了
           $('#material>.MsgType').hide(100);
-
           // 输入区--默认图文
           $('#material>.voice').hide(100);
           $('#material>.video').hide(100);
@@ -227,15 +238,13 @@
           // 
           $('#material>.text').hide(100);
           $('#material>.news').show(100);
+          // 默认选择是text
+          me._MsgType = "news";
         }
       });
-
-      // 默认是选了voice
-      me._MsgType = "voice";
       // 具体选择类型
       $('#MsgType').off().on('change', function() {
         var MsgType = $('#MsgType').val();
-
         me._MsgType = MsgType;
         // 文本
         if (MsgType == 'text') {
@@ -278,26 +287,23 @@
           $('#material>.image').show(100);
         }
       });
-      // 防ipt-file div的事件
+      // 仿ipt-file的 div事件
       $('#material .lable_file_ipt').off().on('click', function(e) {
         $('#' + me._MsgType + '_file').click();
-        $('#' + me._MsgType + '_file')
-          .off()
-          .on("change", function() {
-            var file_obj = $('#' + me._MsgType + '_file')[0].files[0];
-            $(e.currentTarget).html(file_obj.name);
-          });
+        $('#' + me._MsgType + '_file').off().on("change", function() {
+          var file_obj = $('#' + me._MsgType + '_file')[0].files[0];
+          $(e.currentTarget).html(file_obj.name);
+        });
       });
     },
     // 添加确认之前的验证
-    add_yes_valid: function() {
+    add_material_yes_valid: function() {
       var me = this;
       var obj = {};
-
       var key = $('#key').val();
       var category = $('#category').val();
-      var MsgType = $('#MsgType').val();
-
+      var MsgType = me._MsgType;
+      console.log(key,category,MsgType);
       // 文本
       if (MsgType == 'text') {
         var Content = $('#Content').val();
@@ -323,6 +329,7 @@
           PicUrl: PicUrl,
           Url: Url
         };
+        console.log(obj);
       }
       // 音频
       else if (MsgType == 'voice') {
@@ -355,7 +362,6 @@
           image_file: $('#' + me._MsgType + '_file')[0].files[0]
         };
       }
-
       // 验证是否为空
       var formData = new FormData();
       for (var k in obj) {
@@ -365,43 +371,56 @@
           return;
         }
         // 有
-        else  {
+        else {
           formData.append(k, obj[k]);
         }
       }
-      console.log(obj);
-      console.log(formData);
-      return formData;
+      // 临时文件
+      if (MsgType == ('voice' || 'video' || 'image')) {
+        return formData;
+      }
+      // 本地预设或者SDK
+      else {
+        return obj;
+      }
     },
     // 确认添加
-    add_yes: function(index,load) {
+    add_material_yes: function() {
       var me = this;
-
       // 验证后的信息
-      var formData = me.add_yes_valid();
-      // 提交
-      $.ajax({
-        url: me.API.add_temp,
-        type: 'POST',
-        data: formData,
-        // 告诉jQuery不要去处理发送的数据
-        processData: false,
-        // 告诉jQuery不要去设置Content-Type请求头
-        contentType: false,
-        beforeSend: function() {},
-        success: function(data) {
-          if (data.ret) {
-            layer.close(index);
-            layer.close(load);
-            me.datagrid.reload();
-          }
-        },
-        error: function(data) {
-          console.log("error");
-        }
-      });
-    },
+      var formData = me.add_material_yes_valid();
 
+      // return
+      // 
+      // 临时文件
+      if (!formData.MsgType) {
+        return me.API.add_temp(formData);
+      }
+      // 本地预设 文本或静态图文 或SDK
+      else {
+        return me.API.add_text_news(formData);
+      }
+    },
+    // 删除素材
+    del_material: function() {
+      var me = this;
+      // 选择到一条数据
+      me.row = me.list.datagrid('getSelected');
+      // 没有选数据
+      if (!me.row) {
+        layer.msg('请选择一条数据');
+        return
+      }
+      var load = layer.load();
+      me.API.del_material({
+        key: me.row.key
+      }).done(function(data) {
+        if (data.ret) {
+          layer.close(load);
+          me.list.datagrid('reload');
+        }
+      })
+    },
     // ---------------------------------------------nav
     nav: function() {
       var me = this;
@@ -419,22 +438,12 @@
     // 页面加载
     nav_load: function(key) {
       var me = this;
-      // 全局挂载
+      // 关键字全局挂载
       me.key = key;
       //设备表头--请求地址
       me.list_url_title(key);
       me.list_init();
     },
-
-
-
-
-
-
-
-
-
-
     // ---------------------------------------------登录
     login: function() {
       var me = this;
@@ -484,23 +493,21 @@
         layer.msg('请输入密码');
         return;
       }
-
       me.API.pc_login({
-          name: name,
-          password: $.md5(ps),
-          FromUserName: FromUserName
-        })
-        .done(function(data) {
-          // 错误
-          if (data.ret == -1) {
-            layer.msg(data.info);
-          }
-          // 成功
-          else {
-            layer.msg(data.info);
-            me.login_done(index);
-          }
-        })
+        name: name,
+        password: $.md5(ps),
+        FromUserName: FromUserName
+      }).done(function(data) {
+        // 错误
+        if (data.ret == -1) {
+          layer.msg(data.info);
+        }
+        // 成功
+        else {
+          layer.msg(data.info);
+          me.login_done(index);
+        }
+      })
     },
     // 登录成功
     login_done: function(index) {
@@ -516,9 +523,15 @@
         me.url = me.API.material_list;
         me.title = key;
         me.list_title = [
-          [
-            { field: 'id', checkbox: true, width: "10%" },
-            { field: 'key', title: 'key', width: '10%' },
+          [{
+              field: 'id',
+              checkbox: true,
+              width: "10%"
+            }, {
+              field: 'key',
+              title: 'key',
+              width: '10%'
+            },
             // 类型
             {
               field: 'val',
@@ -542,7 +555,11 @@
               }
             },
             // 分类
-            { field: 'category', title: 'category', width: '20%' },
+            {
+              field: 'category',
+              title: 'category',
+              width: '20%'
+            },
             // 过期时间
             {
               field: 'expires_in',
@@ -567,7 +584,7 @@
     list_init: function() {
       var me = this;
       var height = $('#main').height() - 54;
-      me.datagrid =  me.list.datagrid({
+      me.list.datagrid({
         url: me.url,
         method: 'post',
         title: me.title,
@@ -596,13 +613,11 @@
           common_fn.set_lang_zn(me.id);
           $('.searchnodata').remove();
           if (data.total == 0) {
-            $('.datagrid-view')
-              .append('<div id = "hasNoneData" style="text-align:center;padding-top:40px;" class="searchnodata">没有找到相关记录</div>');
+            $('.datagrid-view').append('<div id = "hasNoneData" style="text-align:center;padding-top:40px;" class="searchnodata">没有找到相关记录</div>');
           }
         },
       });
     },
-
   };
   conf.module["Admin"] = Admin;
 })(jQuery, window);
