@@ -31,12 +31,12 @@ router.post('/admin/pc_login', async function(ctx, next) {
   var data = await new tool.Admin().pc_login(ctx.request.body);
   ctx.body = data;
 });
-// pc素材 material list
+// pc素材list
 router.post('/admin/material/list', async function(ctx, next) {
   var data = await new tool.Material().list(ctx.request.body);
   ctx.body = data;
 });
-// pc 添加临时素材
+// 添加临时素材
 router.post('/admin/material/add_temp', async function(ctx, next) {
   // 上传到临时文件夹
   var data = await new tool.Material()._temp_add_local(ctx.req);
@@ -54,9 +54,18 @@ router.post('/admin/material/add_text_news', async function(ctx, next) {
 });
 // pc 删除 素材
 router.post('/admin/del_material', async function(ctx, next) {
-  await new tool.Material().del(ctx.request.body);
+  await new tool.Material()._del(ctx.request.body);
   ctx.body = { ret: 1 };
 });
+
+// pc news 更新
+router.post('/admin/upd_news', async function(ctx, next) {
+  // console.log(ctx.request.body);
+  await new tool.Material()._upd_news(ctx.request.body);
+  ctx.body = { ret: 1 };
+});
+
+
 
 
 

@@ -14,16 +14,24 @@
       var me = this;
       // 侧边栏导航
       me.nav();
+
       // 列表事件
       me.event();
+
+      // login
       // me.login();
     },
     // ---------------------------------------------event
     event: function() {
       var me = this;
+      // 
       me.add();
+      // 
+      me.upd();
+      // 
       me.del();
     },
+    // 新增
     add: function() {
       var me = this;
       $('#main .add').off().on('click', function(argument) {
@@ -33,6 +41,17 @@
         }
       });
     },
+    // 修改
+    upd: function() {
+      var me = this;
+      $('#main .upd').off().on('click', function(argument) {
+        // 素材
+        if (me.key == 'material') {
+          me.upd_material();
+        }
+      });
+    },
+    // 删除
     del: function() {
       var me = this;
       $('#main .del').off().on('click', function(argument) {
@@ -168,7 +187,6 @@
         yes: function(index, layero) {
           var load = layer.load();
           me.add_material_yes()
-            // 
             .done(function(data) {
               if (data.ret) {
                 layer.close(index);
@@ -303,7 +321,6 @@
       var key = $('#key').val();
       var category = $('#category').val();
       var MsgType = me._MsgType;
-      console.log(key,category,MsgType);
       // 文本
       if (MsgType == 'text') {
         var Content = $('#Content').val();
@@ -329,7 +346,6 @@
           PicUrl: PicUrl,
           Url: Url
         };
-        console.log(obj);
       }
       // 音频
       else if (MsgType == 'voice') {
@@ -413,7 +429,8 @@
       }
       var load = layer.load();
       me.API.del_material({
-        key: me.row.key
+        key: me.row.key,
+        MsgType:JSON.parse(me.row.val).MsgType
       }).done(function(data) {
         if (data.ret) {
           layer.close(load);
@@ -421,6 +438,109 @@
         }
       })
     },
+    // 修改素材
+    upd_material: function() {
+      var me = this;
+      // 选择到一条数据
+      me.row = me.list.datagrid('getSelected');
+      // 没有选数据
+      if (!me.row) {
+        layer.msg('请选择一条数据');
+        return
+      }
+
+
+      var val = JSON.parse(me.row.val);
+      var MsgType = val.MsgType;
+      // 只能修改图文
+      if (MsgType != "news") {
+        layer.msg('只能修改图文')
+        return
+      }
+
+
+      var str = `
+      <div id="material">
+        <div>
+          <div class="middle info">key</div>
+          <div class="middle ipt">
+            <input type="text" id="key" placeholder="key" value="${me.row.key}">
+          </div>
+        </div>
+        
+        <!-- 图文 -->
+        <div class="news">
+          <div class="middle info">Title</div>
+          <div class="middle ipt">
+            <input type="text" id="Title" placeholder="Title" value="${val.Articles[0].Title}">
+          </div>
+        </div>
+        <div class="news">
+          <div class="middle info">Description</div>
+          <div class="middle ipt">
+            <input type="text" id="Description" placeholder="Description" value="${val.Articles[0].Description}">
+          </div>
+        </div>
+        <div class="news">
+          <div class="middle info">PicUrl</div>
+          <div class="middle ipt">
+            <input type="text" id="PicUrl" placeholder="PicUrl" value="${val.Articles[0].PicUrl}">
+          </div>
+        </div>
+        <div class="news"> 
+          <div class="middle info">Url</div>
+          <div class="middle ipt">
+            <input type="text" id="Url" placeholder="Url" value="${val.Articles[0].Url}">
+          </div>
+        </div>
+      </div>
+      `;
+
+      layer.open({
+        type: 1,
+        title: 'upd material',
+        area: ['80%', '300px'],
+        anim: 1,
+        shade: 0.6,
+        content: str,
+        btn: ['upd'],
+        success: function(layero, index) {
+          $('#material>.news').show(100);
+        },
+        yes: function(index, layero) {
+          var load = layer.load();
+          me.API.upd_news({
+              _id: me.row._id,
+              key: $('#key').val(),
+              MsgType: MsgType,
+              Title: $('#Title').val(),
+              Description: $('#Description').val(),
+              PicUrl: $('#PicUrl').val(),
+              Url: $('#Url').val(),
+            })
+            .done(function(data) {
+              if (data.ret) {
+                layer.close(index);
+                layer.close(load);
+                me.list.datagrid('reload');
+              }
+            });
+        },
+        btn2: function(index, layero) {},
+      });
+    },
+
+
+
+
+
+
+
+
+
+
+
+
     // ---------------------------------------------nav
     nav: function() {
       var me = this;
@@ -444,6 +564,18 @@
       me.list_url_title(key);
       me.list_init();
     },
+
+
+
+
+
+
+
+
+
+
+
+
     // ---------------------------------------------登录
     login: function() {
       var me = this;
@@ -527,10 +659,31 @@
               field: 'id',
               checkbox: true,
               width: "10%"
-            }, {
+            },
+            // key
+            {
               field: 'key',
               title: 'key',
               width: '10%'
+            },
+            // 类型
+            {
+              field: '_id',
+              title: 'val',
+              width: '25%',
+              formatter: function(value, row, index) {
+                var val = JSON.parse(row.val);
+                var str = ''
+                // 图文
+                if (val.MsgType == 'news') {
+                  str = val.Articles[0].Url;
+                } 
+                // 文本
+                else if (val.MsgType == 'text') {
+                  str = val.Content;
+                }
+                return str;
+              }
             },
             // 类型
             {

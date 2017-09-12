@@ -59,6 +59,15 @@
           data: obj
         });
       },
+      // 更新news
+      upd_news:function(obj) {
+        return $.ajax({
+          url: "/api/admin/upd_news",
+          dataType: "json",
+          type: "POST",
+          data: obj
+        });
+      },
     },
     // ------------------------------电影
     movie: {

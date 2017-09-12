@@ -28,11 +28,19 @@ exports.parseUrl = function(url) {
   });
   return obj
 };
+
+
+
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
 };
+
+
+
+
+
 // --------------------------------------------------xml转化为对象
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
@@ -43,6 +51,11 @@ exports.xml2js = function(xml) {
     });
   });
 };
+
+
+
+
+
 // --------------------------------------------------格式化对象
 function format_data(obj) {
   var msg = null;
@@ -71,6 +84,12 @@ function format_data(obj) {
   return msg;
 };
 exports.format_data = format_data;
+
+
+
+
+
+
 // --------------------------------------------------素材的处理
 // 对于素材的操作增删改查
 function Material() {}
@@ -312,14 +331,55 @@ Material.prototype = {
     }).then();
   },
   // --------------------------------------------------删除
-  del:function(data){
+  _del: function(data) {
     var me = this;
-    return Data.remove({
-      key: data.key,
-    }).then();
+    // 删除的类型 text news
+    if ((data.MsgType == 'text') || (data.MsgType == 'news')) {
+      return Data.remove({
+        key: data.key,
+      }).then();
+    }
+    // 删除临时文件
+    else {
+      return fs.remove(path.join(conf.temporary.path, data.key))
+        .then(function() {
+          return Data.remove({
+            key: data.key,
+          })
+        })
+        .then();
+    }
+
+  },
+  // --------------------------------------------------更新
+  _upd_news: function(data) {
+    var me = this;
+    return Data.update({
+        _id: data._id
+      }, {
+        $set: {
+          key: data.key,
+          val: JSON.stringify({
+            MsgType: data.MsgType,
+            Articles: [{
+              Title: data.Title,
+              Description: data.Description,
+              PicUrl: data.PicUrl,
+              Url: data.Url
+            }]
+          })
+        }
+      })
+      .exec();
   },
 };
 exports.Material = Material;
+
+
+
+
+
+
 // --------------------------------------------------回复数据的处理
 var echo_handle = async function(url_come, obj, FromUserName) {
   var koa_url_come = conf.wx.http + url_come;
@@ -343,7 +403,7 @@ var echo_handle = async function(url_come, obj, FromUserName) {
     var articles = val.Articles;
     articles.forEach(function(item, index) {
       // admin--拼接用户的ID
-      if (conf.wx.admin_key == obj.key) {
+      if (conf.wx.admin_key.indexOf(obj.key) != -1) {
         item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
       }
       // 其他sdk
@@ -389,6 +449,12 @@ exports.data_to_echo = async function(koa_url_come, data) {
   echo.CreateTime = new Date().getTime();
   return echo;
 };
+
+
+
+
+
+
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {
   // 头部
@@ -468,6 +534,11 @@ exports.tpl = function(data) {
   var footer = '</xml>';
   return `${header}${body}${footer}`
 };
+
+
+
+
+
 // --------------------------------------------------SDK验证
 exports.signature = async function(url) {
   await new Token().ticket_reload();
@@ -484,6 +555,9 @@ exports.signature = async function(url) {
     appId: conf.wx.appID
   }
 };
+
+
+
 // --------------------------------------------------管理员的操作
 function Admin() {}
 Admin.prototype = {
