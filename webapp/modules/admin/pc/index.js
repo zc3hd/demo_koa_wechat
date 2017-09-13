@@ -175,7 +175,7 @@
       layer.open({
         type: 1,
         title: 'add material',
-        area: ['300px', '350px'],
+        area: ['80%', '350px'],
         anim: 1,
         shade: 0.6,
         content: str,

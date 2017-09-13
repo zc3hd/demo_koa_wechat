@@ -18,3 +18,9 @@ bike
 http://i5.hexunimg.cn/2015-09-30/179576515.jpg
 modules/sdk/bike_test/index.html
 
+
+tianz
+http://www.100estore.com/r/gou/u/201506/131705569b23.png
+modules/sdk/tz_test/index.html
+
+
