@@ -166,7 +166,7 @@ not supported by any browser */
 .main>.nav_list {
   position: absolute;
   top: 0;
-  left: 0%;
+  left: -30%;
   z-index: 9999;
   width: 30%;
   height: 100%;
@@ -209,5 +209,23 @@ not supported by any browser */
 /* 偶数 */
 
 .main>.nav_list>div>div:nth-child(even) {
-  background-color: rgb(0, 0, 1);
+  background-color: rgb(38, 37, 42);
 }
+
+/* ---------------main-my-list */
+
+.main>.nav_my {
+  position: absolute;
+  bottom: -40%;
+  right: 0%;
+  z-index: 9999;
+  width: 65%;
+  height: 40%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: rgb(28, 27, 32);
+  font-size: 1.2rem;
+  border-top: 1px solid transparent;
+  transition: all 0.3s ease-in;
+  box-shadow: 0px 0px 0px #000;
+} 
