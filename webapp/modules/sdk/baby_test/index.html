@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0">
+  <title>萌宝主义</title>
+  <!-- font -->
+  <link rel="stylesheet" href="./css/tz/style.css">
+  <!-- my -->
+  <link rel="stylesheet" href="./modules/Main/index.css">
+  <!-- music -->
+  <link rel="stylesheet" href="./modules/Main/music/music.css">
+  <!-- follow -->
+  <link rel="stylesheet" href="../../../css/follow/index.css">
+  <!-- jq -->
+  <script src="../../../scripts/lib/jquery/jquery.js" type="text/javascript"></script>
+  <!-- layer -->
+  <link rel="stylesheet" href="../../../scripts/lib/layer/skin/layer.css">
+  <script src="../../../scripts/lib/layer/layer.js" type="text/javascript"></script>
+  <!-- conf -->
+  <script src="../../../scripts/common/conf.js" type="text/javascript"></script>
+  <!-- api -->
+  <script src="../../../scripts/api.js" type="text/javascript"></script>
+  <!-- main -->
+  <script src="./modules/Main/index.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 通知栏-->
+    <div class="info">
+    </div>
+    <!-- 音乐按钮 -->
+    <div class="music_off" id="music_audio_btn" style="display: block;">
+      <div id="music_yinfu"></div>
+      <audio preload="auto" autoplay="false" id="music_media" src="./modules/Main/music/hello.mp3" loop=""></audio>
+    </div>
+    
+    <div></div>
+
+    <!-- main -->
+    <div class="main">
+      <!-- 地图 -->
+      <iframe src="./modules/nav_food/index.html" frameborder="0"></iframe>
+    </div>
+
+    <!-- nav -->
+    <div class="nav noselect">
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+$(function() {
+  new conf.module.Main_html().init();
+});
+</script>
+
+</html>

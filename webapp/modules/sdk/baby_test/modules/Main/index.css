@@ -1,0 +1,125 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+html {
+  // 10px;
+  font-size: 62.5%;
+}
+
+
+/* 垂直居中 */
+
+.middle:after {
+  display: inline-block;
+  width: 0;
+  height: 100%;
+  vertical-align: middle;
+  content: "";
+}
+
+.bottom:after {
+  display: inline-block;
+  width: 0;
+  height: 100%;
+  vertical-align: bottom;
+  content: "";
+}
+
+
+/* 不能选中 */
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+  /* Konqueror */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+not supported by any browser */
+}
+
+
+/* ---------------------------------app */
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+  padding-top: 30px;
+  padding-bottom: 40px;
+}
+
+
+
+
+/* ----------------------------info */
+
+#app>div.info {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  background-color: rgb(28, 27, 32);
+  color: #fff;
+  font-size: 1.5rem;
+  transition: all 0.3s ease-in;
+  /* background-image: url('./img/start.GIF'); */
+  /* background-size: 220px 139px;
+  background-position: center center;
+  background-repeat: no-repeat; */
+}
+
+
+/* ---------------------------------nav */
+
+#app>.nav {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 9999;
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  color: #fff;
+  font-size: 1.8rem;
+  /* background-image: url('./img/start.GIF'); */
+  /* background-size: 220px 139px;
+  background-position: center center;
+  background-repeat: no-repeat; */
+}
+
+
+/* ----------------------------main */
+
+#app>.main {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+
+/* ---------------main-iframe */
+
+.main>iframe {
+  width: 100%;
+  height: 100%;
+}
