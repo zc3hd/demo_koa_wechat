@@ -1,0 +1,29 @@
+@font-face {
+  font-family: 'bb_nav_reg';
+  src:  url('fonts/bb_nav_reg.eot?zhq4m9');
+  src:  url('fonts/bb_nav_reg.eot?zhq4m9#iefix') format('embedded-opentype'),
+    url('fonts/bb_nav_reg.ttf?zhq4m9') format('truetype'),
+    url('fonts/bb_nav_reg.woff?zhq4m9') format('woff'),
+    url('fonts/bb_nav_reg.svg?zhq4m9#bb_nav_reg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="bb_nav_reg"], [class*=" bb_nav_reg"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'bb_nav_reg' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bb_nav_reghandshake-o:before {
+  content: "\f2b5";
+}

@@ -53,6 +53,82 @@ not supported by any browser */
 }
 
 
+/* -----------------------报名图标 */
+
+@keyframes font_change {
+  0% {
+    font-size: 2.0rem;
+    transform: rotate(0deg);
+    color: #fff;
+  }
+  25% {
+    font-size: 2.6rem;
+    transform: rotate(30deg);
+  }
+  50% {
+    font-size: 3.0rem;
+    transform: rotate(0deg);
+    color: #FFFF00;
+  }
+  75% {
+    font-size: 2.6rem;
+    transform: rotate(-30deg);
+  }
+  100% {
+    font-size: 2.0rem;
+    transform: rotate(0deg);
+    color: #fff;
+  }
+}
+
+
+/* -----------------------报名文字 */
+
+@keyframes font_rotate {
+  0% {
+    transform: perspective(300px) rotateY(0deg);
+    text-shadow: 0px 0px 5px #000;
+  }
+  25% {
+    transform: perspective(300px) rotateY(30deg);
+    text-shadow: -8px 0px 5px #000;
+  }
+  50% {
+    transform: perspective(300px) rotateY(0deg);
+    text-shadow: 0px 0px 5px #000;
+  }
+  75% {
+    transform: perspective(300px) rotateY(-30deg);
+    text-shadow: 8px 0px 5px #000;
+  }
+  100% {
+    transform: perspective(300px) rotateY(0deg);
+    text-shadow: 0px 0px 5px #000;
+  }
+}
+
+
+/* -----------------------实时广告图标 */
+
+@keyframes adv_font_change {
+  0% {
+    font-size: 1.2rem;
+  }
+  25% {
+    font-size: 1.5rem;
+  }
+  50% {
+    font-size: 1.8rem;
+  }
+  75% {
+    font-size: 1.5rem;
+  }
+  100% {
+    font-size: 1.2rem;
+  }
+}
+
+
 /* ---------------------------------app */
 
 #app {
@@ -91,6 +167,7 @@ not supported by any browser */
   height: 100%;
   line-height: 40px;
   text-align: center;
+  animation: adv_font_change 2s forwards 1s infinite;
 }
 
 #app>div.info>div.content {
@@ -141,7 +218,7 @@ not supported by any browser */
 
 #app>div.swiper-container {
   width: 100%;
-  height: 200px;
+  height: 250px;
   border-bottom: 3px solid rgb(28, 27, 32);
 }
 
@@ -215,7 +292,7 @@ not supported by any browser */
   box-sizing: border-box;
   border: 2px solid rgb(28, 27, 32);
   border-radius: 10px;
-  transition: all 0.3s ease-in;
+  transition: all 0.2s ease-in;
 }
 
 #app>.nav>div.active {
@@ -228,7 +305,7 @@ not supported by any browser */
   border-left: 2px solid rgb(28, 27, 32);
 }
 
-#app>.nav>div.reg {
+#app>.nav>div.level {
   left: 25%;
   background-color: #CDAD00;
 }
@@ -238,7 +315,7 @@ not supported by any browser */
   background-color: #7FFF00;
 }
 
-#app>.nav>div.level {
+#app>.nav>div.reg {
   left: 75%;
   background-color: #40E0D0;
   border-right: 2px solid rgb(28, 27, 32);
@@ -260,7 +337,61 @@ not supported by any browser */
 }
 
 
-/* --------------------------数据统计 */
+/* --------------------------用户报名 */
+
+#app>.main>.apply {
+  width: 100%;
+  height: 80px;
+  box-sizing: border-box;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #43afee;
+}
+
+#app>.main>.apply>div {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: #FF6A6A;
+  position: relative;
+  box-sizing: border-box;
+  padding-left: 70px;
+  padding-right: 70px;
+}
+
+#app>.main>.apply>div>div.bb_nav_heart {
+  width: 70px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  background-color: transparent;
+  line-height: 70px;
+  text-align: center;
+  color: #fff;
+  transform-origin: 50% 60%;
+  animation: font_change 4s forwards 1s infinite;
+}
+
+#app>.main>.apply>div>div:nth-child(1) {
+  left: 0;
+}
+
+#app>.main>.apply>div>div:nth-child(3) {
+  right: 0;
+}
+
+#app>.main>.apply>div>div:nth-child(2) {
+  width: 100%;
+  height: 100%;
+  line-height: 70px;
+  text-align: center;
+  color: #fff;
+  font-size: 3.0rem;
+}
+
+
+/* --------------------------数据hot */
 
 #app>.main>.hot {
   width: 100%;
@@ -394,7 +525,6 @@ not supported by any browser */
   padding: 5px;
   padding-left: 10px;
   padding-right: 10px;
-  padding-bottom: 80px;
 }
 
 #app>.main>.list>.gridalicious>.galcolumn>.item {
@@ -429,11 +559,12 @@ not supported by any browser */
   font-size: 1.7rem;
 }
 
-#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2){
+#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2) {
   width: 100%;
   height: 50%;
 }
-#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2)>div{
+
+#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2)>div {
   width: 50%;
   height: 100%;
   float: left;
@@ -443,6 +574,45 @@ not supported by any browser */
   font-size: 1.2rem;
 }
 
-#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2)>div:nth-child(1){
+#app>.main>.list>.gridalicious>.galcolumn>.item>div>div:nth-child(2)>div:nth-child(1) {
   border-right: 2px solid #2986bc;
+}
+
+
+/* --------------------------分页器 */
+
+#app>.main>.page {
+  width: 100%;
+  height: 120px;
+  box-sizing: border-box;
+  background-color: #43afee;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 90px;
+}
+
+#app>.main>.page>div {
+  float: left;
+  width: 30%;
+  height: 100%;
+  background-color: #114f74;
+  border-radius: 10px;
+  line-height: 30px;
+  text-align: center;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+#app>.main>.page>div:nth-child(2) {
+  width: 40%;
+  background-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#app>.main>.page>div:nth-child(2)>div {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #fff;
+  border-radius: 10px;
 }

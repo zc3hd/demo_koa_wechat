@@ -6,12 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=0">
   <title>萌宝主义</title>
+  <!-- **********************************图标 -->
   <!-- nav-font -->
   <link rel="stylesheet" href="./font/bb_nav/style.css">
+  <!-- 商家入口 -->
+  <link rel="stylesheet" href="./font/bb_nav_reg/style.css">
   <!-- top-font -->
   <link rel="stylesheet" href="./font/bb_top/style.css">
-  <!-- 隐瞒任务 -->
+  <!-- 隐藏任务 -->
   <link rel="stylesheet" href="./font/bb_lottery/style.css">
+  <!-- **********************************图标 -->
   <!-- my -->
   <link rel="stylesheet" href="./index.css">
   <!-- follow -->
@@ -40,14 +44,14 @@
     <div class="info">
       <div class="bb_top_sound"></div>
       <div class="content" id="advp">
-        <div id="adv">【昌盛文印最新优惠】这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，</div>
+        <div id="adv">【商家最新优惠】这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，</div>
       </div>
     </div>
     <!-- 海报 -->
     <div class="poster">
       <img src="./img/inde.jpg" alt="">
     </div>
-    <!-- 通知栏-->
+    <!-- 本站支线任务-->
     <div class="info lottery">
       <div class="bb_lottery_heartbeat"></div>
       <div class="content" id="lottery_p">
@@ -59,15 +63,17 @@
       <!-- 项目 -->
       <div class="swiper-wrapper">
         <div class="swiper-slide item slider1">
-          广告招商位 1
+          【广告招商位 1】
         </div>
         <div class="swiper-slide item slider2">
           <img src="./img/bady/1.jpg" alt="" style="width: 100%;height: 100%;">
         </div>
-        <div class="swiper-slide item slider3">广告招商位 3</div>
-        <div class="swiper-slide item slider2">广告招商位 4</div>
-        <div class="swiper-slide item slider1">广告招商位 5</div>
-        <div class="swiper-slide item slider3">广告招商位 6</div>
+        <div class="swiper-slide item slider3">
+          <img src="http://i5.hexunimg.cn/2015-09-30/179576515.jpg" alt="" style="width: 100%;height: 100%;">
+          </div>
+        <div class="swiper-slide item slider2">【广告招商位 4】</div>
+        <div class="swiper-slide item slider1">【广告招商位 5】</div>
+        <div class="swiper-slide item slider3">【广告招商位 6】</div>
       </div>
       <!-- 分页器 -->
       <div class="swiper-pagination"></div>
@@ -77,201 +83,25 @@
     </div>
     <!-- nav -->
     <div class="nav noselect">
-      <div class="index active">
+      <div class="index active" key="main">
         <div class="bb_nav_th-list"></div>
         <div>萌宝展示</div>
       </div>
-      <div class="reg">
-        <div class="bb_nav_heart"></div>
-        <div>我要报名</div>
-      </div>
-      <div class="info">
-        <div class="bb_nav_edit"></div>
-        <div>赛事说明</div>
-      </div>
-      <div class="level">
+      <div class="level" key="level">
         <div class="bb_nav_signal"></div>
         <div>排行萌榜</div>
       </div>
+      <div class="info" key="info">
+        <div class="bb_nav_edit"></div>
+        <div>赛事说明</div>
+      </div>
+      <div class="reg" key="reg">
+        <div class="bb_nav_reghandshake-o"></div>
+        <div>商家入口</div>
+      </div>
     </div>
     <!-- main -->
-    <div class="main">
-      <!-- 热度框-->
-      <div class="hot">
-        <div>
-          <div class="num">
-            <div class="middle">已报名</div>
-            <div class="middle">122</div>
-          </div>
-          <div class="vote">
-            <div class="middle">投票总计</div>
-            <div class="middle">456</div>
-          </div>
-          <div class="views">
-            <div class="middle">访问量</div>
-            <div class="middle">78787</div>
-          </div>
-        </div>
-      </div>
-      <!-- 搜索框 -->
-      <div class="ipt">
-        <div>
-          <input type="text" placeholder="请输入选手编号进行搜索~~">
-        </div>
-        <div>
-          <div class="search">搜宝宝</div>
-        </div>
-      </div>
-      <!-- 活动信息 -->
-      <div class="info">
-        <div>活动结束时间：2017年10月30日</div>
-      </div>
-      <!-- 数据列表 -->
-      <div class="list">
-        <div id="device" class="gridalicious">
-          <div class="galcolumn">
-            <div class="item">
-              <img src="./img/bady/1.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <img src="./img/bady/2.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/3.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/4.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/5.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/6.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item">
-              <img src="./img/bady/7.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/8.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/9.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/10.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/4.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/5.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/6.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/7.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-            <div class="item"><img src="./img/bady/8.jpg" />
-              <div>
-                <div>1号 妮妮</div>
-                <div>
-                  <div>投一票</div>
-                  <div>852票</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="page"></div>
+    <div class="main" id="main">
     </div>
   </div>
 </body>
