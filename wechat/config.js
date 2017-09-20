@@ -16,7 +16,7 @@ var conf = {
     // access_token的过期时间
     expires_in: null,
     // 管理员关键字
-    admin_key: ['admb',"adpc"],
+    admin_key: ['admb',"adpc",'萌宝'],
 
     // 配置域名的关键字
     url_key: '.me',

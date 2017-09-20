@@ -32,12 +32,13 @@
         });
       }, 2000);
 
+      
       var layer_load = layer.load(0, { shade: 0.5 });
       // 导航
       me._nav();
       setTimeout(function(argument) {
         // 加载
-        me._nav_load('main', layer_load);
+        me._nav_load('level', layer_load);
       }, 2000)
 
 
