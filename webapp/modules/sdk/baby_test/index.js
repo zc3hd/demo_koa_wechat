@@ -32,16 +32,12 @@
         });
       }, 2000);
 
-      
+
       var layer_load = layer.load(0, { shade: 0.5 });
       // 导航
       me._nav();
-      setTimeout(function(argument) {
-        // 加载
-        me._nav_load('level', layer_load);
-      }, 2000)
-
-
+      // 加载
+      me._nav_load('reg', layer_load);
 
     },
     // -----------------------------------forever
@@ -115,6 +111,7 @@
       //   }
       // }, 302)
     },
+    // -----------------------------------导航
     // nav
     _nav: function() {
       var me = this;
@@ -129,15 +126,39 @@
         $('#app>.nav>div').removeClass('active');
         $(e.currentTarget).addClass('active');
 
+        // 所有的子项
+        $('#app>div').show();
+
+        // ------商家合作
+        if (attr_key == 'reg') {
+          // 所有的子项
+          $('#app>div').hide();
+
+          // 顶部实时广告
+          $('#app>#top_info').show();
+
+          // 导航栏
+          $('#app>#nav').show();
+
+          // 轮播图
+          $('#app>#swiper').show();
+
+          // main 单独显示
+          $('#app>#main').show();
+        }
+
+
+
         // -------------js
         var layer_load = layer.load(0, { shade: 0.5 });
-        me._nav_load(attr_key,layer_load);
+        me._nav_load(attr_key, layer_load);
       })
     },
     // 菜单加载
     _nav_load: function(key, layer_load) {
       var me = this;
       $('#main').load(`./tpl/${key}.html`, function() {
+
         // 主页
         if (key == 'main') {
           // 数据列表
@@ -151,8 +172,9 @@
         else if (key == 'info') {
           me._info(layer_load);
         }
-        // 商家合作
+        // 商家入口
         else if (key == 'reg') {
+
           me._reg(layer_load);
         }
       });
@@ -165,7 +187,7 @@
       me._mian_list(layer_load);
     },
     // 展示列表
-    _mian_list:function  (layer_load) {
+    _mian_list: function(layer_load) {
       var me = this;
       var width = $('#app>.main>.list ').width();
       //主要部分
@@ -188,17 +210,17 @@
       });
     },
     // -----------------------------------排行信息
-    _level:function  (layer_load) {
+    _level: function(layer_load) {
       var me = this;
       layer.close(layer_load);
     },
     // -----------------------------------赛事说明
-    _info:function  (layer_load) {
+    _info: function(layer_load) {
       var me = this;
       layer.close(layer_load);
     },
     // -----------------------------------商家入口
-    _reg:function  (layer_load) {
+    _reg: function(layer_load) {
       var me = this;
       layer.close(layer_load);
     },
