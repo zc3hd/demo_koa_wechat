@@ -19,7 +19,6 @@
   <link rel="stylesheet" href="./font/bb_info/iconfont.css">
   <!-- level -->
   <link rel="stylesheet" href="./font/bb_level/iconfont.css">
-  
   <!-- **********************************图标 -->
   <!-- my -->
   <link rel="stylesheet" href="./index.css">
@@ -37,34 +36,34 @@
   <script src="../../../scripts/lib/grid_a_licious/js/jquery.grid-a-licious.min.js" type="text/javascript"></script>
   <!-- conf -->
   <script src="../../../scripts/common/conf.js" type="text/javascript"></script>
-  <!-- api -->
-  <script src="../../../scripts/api.js" type="text/javascript"></script>
+  <!--本地 api -->
+  <script src="./api.js" type="text/javascript"></script>
   <!-- main -->
   <script src="./index.js" type="text/javascript"></script>
 </head>
 
 <body>
   <div id="app">
-    <!-- 通知栏-->
-    <div class="info" id="top_info">
+    <!-- ********************通知栏-->
+    <div class="info">
       <div class="bb_top_sound"></div>
       <div class="content" id="advp">
         <div id="adv">【商家最新优惠】这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，这里是实时广告区，</div>
       </div>
     </div>
-    <!-- 海报 -->
+    <!-- ****************************************海报 -->
     <div class="poster">
       <img src="./img/inde.jpg" alt="">
     </div>
-    <!-- 本站支线任务-->
+    <!-- ****************************************本站支线任务-->
     <div class="info lottery">
       <div class="bb_lottery_heartbeat"></div>
       <div class="content" id="lottery_p">
         <div id="lottery_s">【全民支线任务】为感谢天镇县广大父老乡亲对的本平台的支持，本平台现在开启第一个支线任务，即：本站的第888位投票朋友，可获得50元微信现金红包，赶快吆喝人们来成为第888位投票的支持者吧~~【后续任务持续中~~】</div>
       </div>
     </div>
-    <!-- 轮播 -->
-    <div class="swiper-container" id="swiper">
+    <!-- ****************************************轮播 -->
+    <div class="swiper-container">
       <!-- 项目 -->
       <div class="swiper-wrapper">
         <div class="swiper-slide item slider1">
@@ -87,7 +86,7 @@
       <div class="swiper-button-next"></div>
     </div>
     <!-- nav -->
-    <div class="nav noselect" id="nav">
+    <div class="nav noselect">
       <div class="index active" key="main">
         <div class="bb_nav_th-list"></div>
         <div>萌宝展示</div>
@@ -105,17 +104,16 @@
         <div>商家入口</div>
       </div>
     </div>
-
-    <!-- 报名 -->
-    <div class="apply">
+    <!-- ****************************************报名 -->
+    <div class="apply" id="apply">
       <div>
         <div class="bb_nav_heart"></div>
         <div>宝宝报名入口</div>
         <div class="bb_nav_heart"></div>
       </div>
     </div>
-    <!-- 热度框-->
-    <div class="hot">
+    <!-- ****************************************热度框-->
+    <div class="hot" id="hot">
       <div>
         <div class="num">
           <div class="middle">已报名</div>
@@ -131,8 +129,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- main -->
+    <!-- ****************************************main -->
     <div class="main" id="main">
     </div>
   </div>

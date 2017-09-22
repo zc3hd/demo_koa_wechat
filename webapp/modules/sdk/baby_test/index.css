@@ -940,83 +940,143 @@ not supported by any browser */
   width: 100%;
   /* height: 200px; */
   box-sizing: border-box;
-  border: 2px solid #114f74;
-  border-radius: 15px;
-  margin-top: 30px;
-}
-
-#app>.main>.reg>div.item>span {
-  display: block;
-  width: 50px;
-  height: 50px;
-  line-height: 50px;
-  text-align: center;
-  font-size: 40px;
-  background-color: #43afee;
-  color: #FF6A6A;
-  text-shadow: 3px 3px 5px #000;
-  transform-origin: 50% 60%;
-  position: absolute;
-  left: 50%;
-  top: -25px;
-  margin-left: -25px;
-  animation: level 4s forwards 1s infinite;
-}
-
-#app>.main>.reg>div.item>span.icon-guanjun {
-  font-size: 50px;
-  color: #FF6A6A;
-}
-
-#app>.main>.reg>div.item>span.icon-yajun {
-  font-size: 48px;
-  color: #CDAD00;
-}
-
-#app>.main>.reg>div.item>span.icon-jijun {
-  font-size: 46px;
-  color: #7FFF00;
-}
-
-
-/* 图片 */
-
-#app>.main>.reg>div.item>div.img {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 20px;
-  padding-top: 35px;
+  padding-top: 5px;
   padding-bottom: 5px;
-}
-
-#app>.main>.reg>div.item>div.img>img {
-  width: 100%;
-  height: auto;
-  border-radius: 15px;
-}
-
-
-/* info */
-
-#app>.main>.reg>div.item>div.info {
-  width: 100%;
-  height: 40px;
-  box-sizing: border-box;
+  /* border: 2px solid #114f74; */
   background-color: #114f74;
-  border-radius: 0 0 10px 10px;
+  border-radius: 15px;
+  margin-top: 10px;
 }
 
-#app>.main>.reg>div.item>div.info>div {
-  box-sizing: border-box;
-  float: left;
+
+/* 标题 */
+
+#app>.main>.reg>div.item>.title {
   width: 50%;
+  height: 30px;
+  margin-top: 10px;
+  line-height: 30px;
+  text-align: left;
+  padding-left: 20px;
+  color: #fff;
+  font-size: 1.6rem;
+}
+
+
+/* 具体内容 */
+
+#app>.main>.reg>div.item>.info {
+  box-sizing: border-box;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 100%;
+  color: #fff;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  /* display: none; */
+}
+
+#app>.main>.reg>div.item>.info>div {
+  margin-bottom: 6px;
+}
+
+
+/* --------------------------------------------------------商家具体选择 */
+
+
+
+#app>.main>.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: #114f74;
+  padding-bottom: 80px;
+}
+
+#app>.main>.input>div {
+  width: 100%;
+  height: 50px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  background: #43afee;
+  position: relative;
+  box-sizing: border-box;
+  padding-left: 70px;
+  padding-right: 70px;
+}
+
+#app>.main>.input>div>div.bb_nav_heart {
+  line-height: 50px;
+  width: 70px;
   height: 100%;
-  line-height: 40px;
+  position: absolute;
+  top: 0;
+  background-color: transparent;
   text-align: center;
   color: #fff;
-  font-size: 1.8rem;
+  transform-origin: 50% 60%;
+  animation: font_change 4s forwards 1s infinite;
 }
 
-#app>.main>.reg>div.item>div.info>div:nth-child(1) {
-  border-right: 1px solid #43afee;
+#app>.main>.input>div>div:nth-child(1) {
+  left: 0;
+}
+
+#app>.main>.input>div>div:nth-child(3) {
+  right: 0;
+}
+
+#app>.main>.input>div>div:nth-child(2) {
+  line-height: 50px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  /* color: #114f74; */
+  color: #fff;
+  font-size: 2.4rem;
+}
+
+
+
+
+/* -----------------------------------------------新增宝宝 */
+#add_baby{
+  width: 100%;
+  height: 100%;
+  color: #114f74;
+  font-size: 1.4rem;
+  overflow-y: auto;
+}
+#add_baby>div{
+  width: 100%;
+  height: 30px;
+  position: relative;
+  box-sizing: border-box;
+  padding-left: 100px;
+  margin-bottom: 4px;
+}
+
+#add_baby>div>div{
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100px;
+  height: 100%;
+
+  line-height: 30px;
+  text-align: center;
+}
+#add_baby>div>input{
+  width: 90%;
+  height: 90%;
+}
+
+#add_baby>.info{
+  width: 100%;
+  height: 60px;
+  padding-left: 0;
+  border: 1px dashed #114f74;
+  line-height: 30px;
+  text-align: center;
+  font-size: 1.2rem;
 }

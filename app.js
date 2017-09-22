@@ -38,6 +38,11 @@ var api = require('./routes/api.js');
 app.use(api.routes(), api.allowedMethods());
 
 
+// ------------------------------------------baby
+var api_baby = require('./routes/api_baby.js');
+app.use(api_baby.routes(), api_baby.allowedMethods());
+
+
 
 
 db.once('open', function(callback) {

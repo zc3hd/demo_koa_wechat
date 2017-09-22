@@ -1,7 +1,6 @@
 (function($, window) {
   function Main_html() {
     var me = this;
-    me.api = new conf.module.API();
 
   };
   Main_html.prototype = {
@@ -16,29 +15,154 @@
     event: function() {
       var me = this;
       // 轮播图
-      me._swiper();
+      // me._swiper();
 
       // 实时广告
-      me._adv({
-        parent: '#advp',
-        son: '#adv'
-      });
+      // me._adv({
+      //   parent: '#advp',
+      //   son: '#adv'
+      // });
 
       // 支线任务
-      setTimeout(function(argument) {
-        me._adv({
-          parent: '#lottery_p',
-          son: '#lottery_s'
-        });
-      }, 2000);
+      // setTimeout(function(argument) {
+      //   me._adv({
+      //     parent: '#lottery_p',
+      //     son: '#lottery_s'
+      //   });
+      // }, 2000);
 
-
-      var layer_load = layer.load(0, { shade: 0.5 });
-      // 导航
-      me._nav();
+      // nav
+      // var index = layer.load(0, { shade: 0.5 });
+      // me._nav();
       // 加载
-      me._nav_load('reg', layer_load);
+      // me._nav_load('main', index);
 
+
+
+      // 收集微信用户
+      me._wx_user(function() {
+        // 可以添加宝宝了
+        me._apply();
+      });
+    },
+    // -----------------------------------收集微信用户
+    _wx_user: function(cb) {
+      var me = this;
+      // 用户信息
+      var FromUserName = common_fn.getParam('FromUserName');
+
+      API.wx_user({
+          val: FromUserName,
+          baby: 1
+        })
+        .done(function(data) {
+          // 新增成功
+          if (data.ret == 1) {
+            cb();
+          }
+
+        })
+    },
+    // -----------------------------------报名入口
+    _apply: function() {
+      var me = this;
+
+      var str = `
+      <div id="add_baby">
+        <div>
+          <div>宝宝姓名</div>
+          <input type="text" placeholder="字数不超过6个字" id="baby_name">
+        </div>
+        <div>
+          <div>家长姓名</div>
+          <input type="text" placeholder="请输入家长姓名" id="p_name">
+        </div>
+        <div>
+          <div>联系电话</div>
+          <input type="text" placeholder="请输入联系电话" id="p_phone">
+        </div>
+        <div>
+          <div>上传照片</div>
+          <input type="file" id="baby_img">
+        </div>
+        <div class="info">
+          上传图片大小不允超过1M</br>
+          以上全部为必输入项
+        </div>
+      </div>
+      `;
+
+      $('#apply').on('click', function() {
+        layer.open({
+          title: '宝宝报名',
+          area: ['90%', '50%'],
+          shade: 0.6,
+          closeBtn: 2,
+          anim: 2,
+          content: str,
+          success: function(layero, index) {},
+          btn: ['报名'],
+          yes: function(index, layero) {
+
+            me._apply_yes(index);
+          }
+        });
+      });
+    },
+    // 添加验证
+    _apply_yes: function(index) {
+      var me = this;
+
+      var baby_name = $('#baby_name').val();
+      var p_name = $('#p_name').val();
+      var p_phone = $('#p_phone').val();
+      var baby_img = $('#baby_img')[0].files[0];
+      if (!baby_name) {
+        layer.tips('宝宝姓名必须填哦', '#baby_name', {
+          tips: 1
+        });
+        return;
+      }
+      if (!p_name) {
+        layer.tips('家长姓名必须填哦', '#p_name', {
+          tips: 1
+        });
+        return;
+      }
+      if (!p_phone) {
+        layer.tips('没有手机我们怎么联系您呢', '#p_phone', {
+          tips: 1
+        });
+        return;
+      }
+      if (!baby_img) {
+        layer.tips('没有照片参考不了比赛哦', '#baby_img', {
+          tips: 1
+        });
+        return;
+      }
+      if (baby_img.size > 1 * 1024 * 1024) {
+        layer.tips('照片超过1M咯', '#baby_img', {
+          tips: 1
+        });
+        return;
+      }
+
+      var obj = {
+        baby_name: baby_name,
+        p_name: p_name,
+        p_phone: p_phone,
+        baby_img: baby_img,
+      };
+      var formData = new FormData();
+
+      for (var k in obj) {
+        formData.append(k, obj[k]);
+      }
+      API.add_baby(formData)
+        .done(function(data) {
+          
+        });
     },
     // -----------------------------------forever
     // 轮播图
@@ -126,27 +250,13 @@
         $('#app>.nav>div').removeClass('active');
         $(e.currentTarget).addClass('active');
 
-        // 所有的子项
-        $('#app>div').show();
+        // 报名和热度框
+        $('#apply,#hot').show();
 
-        // ------商家合作
+        // 商家合作--报名和热度框
         if (attr_key == 'reg') {
-          // 所有的子项
-          $('#app>div').hide();
-
-          // 顶部实时广告
-          $('#app>#top_info').show();
-
-          // 导航栏
-          $('#app>#nav').show();
-
-          // 轮播图
-          $('#app>#swiper').show();
-
-          // main 单独显示
-          $('#app>#main').show();
+          $('#apply,#hot').hide();
         }
-
 
 
         // -------------js
@@ -179,6 +289,7 @@
         }
       });
     },
+
     // -----------------------------------主页展示
     // 数据展示
     _main: function(layer_load) {
