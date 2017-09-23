@@ -15,35 +15,56 @@
     event: function() {
       var me = this;
       // 轮播图
-      // me._swiper();
+      me._swiper();
 
       // 实时广告
-      // me._adv({
-      //   parent: '#advp',
-      //   son: '#adv'
-      // });
+      me._adv({
+        parent: '#advp',
+        son: '#adv'
+      });
 
       // 支线任务
-      // setTimeout(function(argument) {
-      //   me._adv({
-      //     parent: '#lottery_p',
-      //     son: '#lottery_s'
-      //   });
-      // }, 2000);
+      setTimeout(function(argument) {
+        me._adv({
+          parent: '#lottery_p',
+          son: '#lottery_s'
+        });
+      }, 2000);
 
       // nav
-      // var index = layer.load(0, { shade: 0.5 });
-      // me._nav();
+      var index = layer.load(0, { shade: 0.5 });
+      me._nav();
       // 加载
-      // me._nav_load('main', index);
+      me._nav_load('main', index);
 
 
 
       // 收集微信用户
       me._wx_user(function() {
+        // 统计数据
+        me._hot();
         // 可以添加宝宝了
         me._apply();
       });
+
+    },
+    // -----------------------------------统计数据
+    _hot:function(){
+      var me = this;
+      API.hot()
+      .done(function(arr){
+        arr.forEach(function(item,index){
+          if (item.key=='num') {
+            $('#num').html(item.val)
+          }
+          if (item.key=='vote') {
+            $('#vote').html(item.val)
+          }
+          if (item.key=='views') {
+            $('#views').html(item.val)
+          }
+        });
+      })
     },
     // -----------------------------------收集微信用户
     _wx_user: function(cb) {
@@ -57,7 +78,8 @@
         })
         .done(function(data) {
           // 新增成功
-          if (data.ret == 1) {
+          if (data.val) {
+            me.wx_user_id = data.val;
             cb();
           }
 
@@ -109,7 +131,7 @@
         });
       });
     },
-    // 添加验证
+    // 确认添加
     _apply_yes: function(index) {
       var me = this;
 
@@ -117,24 +139,46 @@
       var p_name = $('#p_name').val();
       var p_phone = $('#p_phone').val();
       var baby_img = $('#baby_img')[0].files[0];
+      // ---------------------------------------------
       if (!baby_name) {
         layer.tips('宝宝姓名必须填哦', '#baby_name', {
           tips: 1
         });
         return;
       }
+      if (baby_name.length>6) {
+        layer.tips('宝宝名字太长咯', '#baby_name', {
+          tips: 1
+        });
+        return;
+      }
+      // ----------------------------------
       if (!p_name) {
         layer.tips('家长姓名必须填哦', '#p_name', {
           tips: 1
         });
         return;
       }
+      if (p_name.length>6) {
+        layer.tips('家长名字太长咯', '#baby_name', {
+          tips: 1
+        });
+        return;
+      }
+      // ----------------------------------------
       if (!p_phone) {
         layer.tips('没有手机我们怎么联系您呢', '#p_phone', {
           tips: 1
         });
         return;
       }
+      if (p_phone.length!=11) {
+        layer.tips('手机号不对哦', '#p_phone', {
+          tips: 1
+        });
+        return;
+      }
+      // ----------------------------------------
       if (!baby_img) {
         layer.tips('没有照片参考不了比赛哦', '#baby_img', {
           tips: 1
@@ -147,7 +191,15 @@
         });
         return;
       }
-
+      if (baby_img.name.split('.').length!=2) {
+        layer.tips('照片名字不能含有 . 哦~~', '#baby_img', {
+          tips: 1
+        });
+        return;
+      }
+      // ---------------------------------------------
+      
+      
       var obj = {
         baby_name: baby_name,
         p_name: p_name,
@@ -161,9 +213,24 @@
       }
       API.add_baby(formData)
         .done(function(data) {
-          
+          if (data._id) {
+            layer.msg('宝宝报名成功');
+            layer.close(index);
+          }
         });
     },
+
+
+
+
+
+
+
+
+
+
+
+
     // -----------------------------------forever
     // 轮播图
     _swiper: function(argument) {

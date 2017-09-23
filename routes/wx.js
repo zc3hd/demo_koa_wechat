@@ -12,6 +12,7 @@ router.get('/', async(ctx, next) => {
   // 路径解析
   var obj = tool.parseUrl(ctx.url);
 
+
   var sha = tool.sha({
     token: conf.wx.token,
     timestamp: obj.timestamp,
@@ -64,6 +65,7 @@ router.post('/', async function(ctx, next) {
 
     // 用户过来的信息再次格式化
     var data = tool.format_data(data_f.xml);
+
 
     // 给用户回复的信息
     var echo = await tool.data_to_echo(ctx.url, data);

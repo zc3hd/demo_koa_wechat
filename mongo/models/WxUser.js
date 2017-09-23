@@ -7,6 +7,10 @@ var WxUserSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  "baby_vote": {
+    type: Number,
+    default: 0
+  },
 });
 
 //model

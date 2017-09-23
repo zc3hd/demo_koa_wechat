@@ -1,4 +1,13 @@
 var API = {
+  // 统计数据
+  hot:function(obj) {
+    return $.ajax({
+      url: "/api/baby/hot_count",
+      dataType: "json",
+      type: "POST",
+      // data: obj
+    })
+  },
   // 收集微信用户
   wx_user: function(obj) {
     return $.ajax({

@@ -440,6 +440,7 @@ exports.data_to_echo = async function(koa_url_come, data) {
   var obj = await Data.findOne({
     key: key
   }).exec();
+
   // 返回处理后的对象--me是外面访问的对象
   var val = await echo_handle(koa_url_come, obj, data.FromUserName);
   // 挂载对象

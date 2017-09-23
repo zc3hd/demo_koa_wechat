@@ -8,12 +8,35 @@ const router = require('koa-router')();
 
 router.prefix('/api/baby');
 
+
+// 统计数据
+router.post('/hot_count', async function(ctx, next) {
+  // console.log(ctx.request.body);
+  var data = await new Baby()._all();
+  ctx.body = data;
+});
+
+
+
 // 新增微信用户
 router.post('/add_wx_user', async function(ctx, next) {
+  // 访客数据
+  await new Baby()._count("views");
   // console.log(ctx.request.body);
   var data = await new Baby().add_wx_one(ctx.request.body);
-  
   ctx.body = data;
+});
+
+
+// 添加宝宝
+router.post('/add_baby', async function(ctx, next) {
+  // 报名数据
+  await new Baby()._count("num");
+  // 上传到本地文件夹
+  var data = await new Baby()._upload_to_server(ctx.req);
+  // 本地数据库新增
+  var echo = await new Baby()._save(data);
+  ctx.body =  echo;
 });
 
 
@@ -35,16 +58,7 @@ router.post('/add_wx_user', async function(ctx, next) {
 //   var data = await new tool.Material().list(ctx.request.body);
 //   ctx.body = data;
 // });
-// // 添加临时素材
-// router.post('/admin/material/add_temp', async function(ctx, next) {
-//   // 上传到临时文件夹
-//   var data = await new tool.Material()._temp_add_local(ctx.req);
-//   // 转移到key的文件夹
-//   await new tool.Material()._temp_key(data);
-//   // 线上和本地数据库新增
-//   await new tool.Material()._temp_online_save(data);
-//   ctx.body =  { ret: 1 };
-// });
+
 // // pc 添加文本 和 news
 // router.post('/admin/material/add_text_news', async function(ctx, next) {
 //   // 添加 本地预设 或者 sdk

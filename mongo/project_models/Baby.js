@@ -1,13 +1,20 @@
 var mongoose = require('mongoose');
 
 //schema
-var WxUserSchema = new mongoose.Schema({
-  "val": String,
+var OriginalSchema = new mongoose.Schema({
+  "baby_name": String,
+  "p_name": String,
+  "p_phone": String,
+  "baby_img": String,
+  "vote": {
+    type: Number,
+    default: 0
+  },
 });
 
 //model
-var WxUser = mongoose.model("wxuser", WxUserSchema);
-
+var Baby = mongoose.model("baby", OriginalSchema);
+module.exports = Baby;
 
 // 超级管理员
 // User.create({
@@ -39,4 +46,3 @@ var WxUser = mongoose.model("wxuser", WxUserSchema);
 
 // asd.test();
 
-module.exports = User;

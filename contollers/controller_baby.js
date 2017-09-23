@@ -10,19 +10,47 @@ var Busboy = require('busboy');
 // var conf = require('./config.js');
 // var colors = require('colors');
 // colors.setTheme(conf.log);
-
+var conf = {
+  path: path.join(__dirname, '../material/baby'),
+}
 
 // ---------------------------数据库
 // 微信用户
 var WxUser = require('../mongo/models/WxUser.js');
+// baby
+var Baby = require('../mongo/project_models/Baby.js');
+// 统计
+var Count = require('../mongo/project_models/Count.js');
 
 
 
+function Baby_main() {}
+Baby_main.prototype = {
+  // ----------------------------------------统计
+  _count:async function(key) {
+    var me = this;
 
+    // 查询
+    var obj = await Count.findOne({
+      key: key
+    }).exec();
 
-
-function Baby() {}
-Baby.prototype = {
+    await Count.update({
+        key: key
+      }, {
+        $set: {
+          val: (obj.val+1)
+        }
+      })
+      .exec();
+  },
+  // 查询所有
+  _all:async function() {
+    var me = this;
+    return await Count.find({})
+      .exec();
+  },
+  // ----------------------------------------添加微信用户
   // 添加微信用户
   add_wx_one: async function(obj) {
     var me = this;
@@ -30,7 +58,7 @@ Baby.prototype = {
     var echo = null;
 
     // 查找用户
-    var data = await me.findOne(obj.val);
+    var data = await me.find_wx_one(obj.val);
     // 没有此用户
     if (data == null) {
       echo = await WxUser.create({
@@ -40,21 +68,75 @@ Baby.prototype = {
     }
     // 这个用户存在
     else {
-      echo = {
-        baby:data.baby
-      };
+      echo = data;
     }
     // 回复
-    return {
-      ret:echo.baby
-    };
+    return echo;
   },
-  // 查找用户
-  findOne: async function(val) {
+  // 查找微信用户
+  find_wx_one: async function(val) {
     var me = this;
     return WxUser.findOne({
       val: val
     }).exec();
+  },
+  // ----------------------------------------报名
+  // 上传到本地文件
+  _upload_to_server: async function(req) {
+    var me = this;
+    // 发射器
+    var _emmiter = new Busboy({
+      headers: req.headers
+    });
+    // 用于收集字段值
+    var obj = {};
+    // 传过来 fieldname--字段名  val--传过来的值
+    _emmiter.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+      // console.log('Field [' + fieldname + ']: value: ' + val);
+      // 挂载数据
+      obj[fieldname] = val;
+    });
+    // 要保存的地址
+    var test_path = conf.path;
+    return new Promise((resolve, reject) => {
+
+      _emmiter.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        var arr = filename.split('.');
+        // 随机数1
+        var random = Math.floor(Math.random()*100000);
+        // 随机数2
+        var timestamp = new Date().getTime();
+
+        var file_name = `${arr[0]}_${random}_${timestamp}.${arr[1]}`;
+        // 确认的最终保存地址
+        var saveTo = path.join(test_path, file_name);
+        file.pipe(fs.createWriteStream(saveTo));
+        // 挂载数据
+        obj[fieldname] = file_name;
+        // console.log('File [' + fieldname + ']: filename: ' + filename);
+        // file.on('data', function(data) {
+        //   // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+        // });
+        // file.on('end', function() {
+        // })
+      });
+      _emmiter.on('finish', function() {
+        // 全部完毕后--传递数据
+        resolve(obj);
+      });
+      _emmiter.on('error', function(err) {
+        reject(err)
+      });
+      req.pipe(_emmiter);
+    });
+  },
+  // 保存到数据库
+  _save:async function(obj) {
+    var me = this;
+    // 要回复的数据
+    var echo = null;
+    echo = await Baby.create(obj).then();
+    return echo;
   },
 
 
@@ -175,47 +257,7 @@ Baby.prototype = {
       })
     });
   },
-  // 新增到本地临时目录（外用）
-  _temp_add_local: async function(req) {
-    var me = this;
-    // 发射器
-    var _emmiter = new Busboy({
-      headers: req.headers
-    });
-    // 用于收集字段值
-    var obj = {};
-    // 传过来 fieldname--字段名  val--传过来的值
-    _emmiter.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-      // console.log('Field [' + fieldname + ']: value: ' + val);
-      // 挂载数据
-      obj[fieldname] = val;
-    });
-    // 要保存的地址
-    var test_path = path.join(conf.temporary.path, conf.temporary.temp);
-    return new Promise((resolve, reject) => {
-      _emmiter.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        // 确认的最终保存地址
-        var saveTo = path.join(path.join(test_path, filename));
-        file.pipe(fs.createWriteStream(saveTo));
-        // 挂载数据
-        obj[fieldname] = filename;
-        // console.log('File [' + fieldname + ']: filename: ' + filename);
-        // file.on('data', function(data) {
-        //   // console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
-        // });
-        // file.on('end', function() {
-        // })
-      });
-      _emmiter.on('finish', function() {
-        // 全部完毕后--传递数据
-        resolve(obj);
-      });
-      _emmiter.on('error', function(err) {
-        reject(err)
-      });
-      req.pipe(_emmiter);
-    });
-  },
+
   // 移动到新增目录
   _temp_key: async function(data) {
     var me = this;
@@ -342,5 +384,4 @@ Baby.prototype = {
       .exec();
   },
 };
-module.exports = Baby;
-// exports.Baby = Baby;
+module.exports = Baby_main;
