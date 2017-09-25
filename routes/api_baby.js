@@ -40,11 +40,20 @@ router.post('/add_baby', async function(ctx, next) {
 });
 
 
-// // 验证
-// router.post('/sdk/signature', async function(ctx, next) {
-//   var data = await tool.signature(ctx.request.body.url);
-//   ctx.body = data;
-// });
+// 宝宝列表
+router.post('/list', async function(ctx, next) {
+  var data = await new Baby()._list(ctx.request.body);
+  ctx.body =  data;
+});
+
+
+// 添加投票
+router.post('/vote', async function(ctx, next) {
+  var data = await new Baby()._vote(ctx.request.body);
+  ctx.body =  data;
+});
+
+
 
 
 // // PC端登
@@ -53,6 +62,8 @@ router.post('/add_baby', async function(ctx, next) {
 //   
 //   ctx.body = data;
 // });
+
+
 // // pc素材list
 // router.post('/admin/material/list', async function(ctx, next) {
 //   var data = await new tool.Material().list(ctx.request.body);

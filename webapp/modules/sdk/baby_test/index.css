@@ -1080,3 +1080,26 @@ not supported by any browser */
   text-align: center;
   font-size: 1.2rem;
 }
+
+
+/* -----------------------------------------------支线获得者 */
+#winner{
+  width: 100%;
+  height: 100%;
+  color: #114f74;
+  font-size: 1.4rem;
+  overflow-y: auto;
+}
+#winner>div.title{
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+#winner>input{
+  width: 99%;
+  height: 30px;
+  margin-bottom: 5px;
+}

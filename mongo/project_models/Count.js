@@ -14,12 +14,29 @@ var Count = mongoose.model("count", OriginalSchema);
 
 
 // Count.create({
-//   "key": 'visit',
+//   "key": 'views',
 //   "val": 0,
 // })
 // .then(function (data) {
 //   console.log(data);
 // });
+
+// Count.create({
+//   "key": 'num',
+//   "val": 0,
+// })
+// .then(function (data) {
+//   console.log(data);
+// });
+
+// Count.create({
+//   "key": 'vote',
+//   "val": 0,
+// })
+// .then(function (data) {
+//   console.log(data);
+// });
+
 
 module.exports = Count;
 

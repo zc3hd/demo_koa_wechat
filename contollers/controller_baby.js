@@ -10,8 +10,11 @@ var Busboy = require('busboy');
 // var conf = require('./config.js');
 // var colors = require('colors');
 // colors.setTheme(conf.log);
+
+
 var conf = {
-  path: path.join(__dirname, '../material/baby'),
+  path: path.join(__dirname, '../webapp/modules/sdk/baby_test/img/bady'),
+  vote:36,
 }
 
 // ---------------------------数据库
@@ -27,7 +30,7 @@ var Count = require('../mongo/project_models/Count.js');
 function Baby_main() {}
 Baby_main.prototype = {
   // ----------------------------------------统计
-  _count:async function(key) {
+  _count: async function(key) {
     var me = this;
 
     // 查询
@@ -35,17 +38,19 @@ Baby_main.prototype = {
       key: key
     }).exec();
 
+
+
     await Count.update({
         key: key
       }, {
         $set: {
-          val: (obj.val+1)
+          val: (obj.val + 1)
         }
       })
       .exec();
   },
-  // 查询所有
-  _all:async function() {
+  // 查询所有的统计数据
+  _all: async function() {
     var me = this;
     return await Count.find({})
       .exec();
@@ -63,7 +68,7 @@ Baby_main.prototype = {
     if (data == null) {
       echo = await WxUser.create({
         val: obj.val,
-        baby:obj.baby
+        baby: obj.baby
       }).then();
     }
     // 这个用户存在
@@ -103,7 +108,7 @@ Baby_main.prototype = {
       _emmiter.on('file', function(fieldname, file, filename, encoding, mimetype) {
         var arr = filename.split('.');
         // 随机数1
-        var random = Math.floor(Math.random()*100000);
+        var random = Math.floor(Math.random() * 100000);
         // 随机数2
         var timestamp = new Date().getTime();
 
@@ -131,37 +136,118 @@ Baby_main.prototype = {
     });
   },
   // 保存到数据库
-  _save:async function(obj) {
+  _save: async function(obj) {
     var me = this;
+    var count = await Baby.count().exec();
+    obj.baby_id = count + 1;
     // 要回复的数据
     var echo = null;
     echo = await Baby.create(obj).then();
     return echo;
   },
-
-
-
-
-
-
-
-  // pc （外用）-------------------------------------------全部素材
-  list: async function(obj) {
+  // -----------------------------------------数据列表
+  _list: async function(obj) {
     var me = this;
-    // 展示
+    // 展示的
     var limit = parseInt(obj.rows);
     // 跳过
     var skip = (obj.page - 1) * limit;
     // 查询数据
-    var data = await Data.find().limit(limit).skip(skip).sort({
-      key: 1
-    }).exec();
-    var count = await Data.count().exec();
+    var data = await Baby.find()
+      .sort({
+        _id: 1
+      })
+      .limit(limit)
+      .skip(skip)
+      .exec();
+    var count = await Baby.count().exec();
     return {
       total: count,
       rows: data
     };
   },
+  // -----------------------------------------投票
+  _vote: async function(obj) {
+    var me = this;
+    // var baby_id = obj.baby_id;
+
+    var wx_data = await WxUser.findOne({
+      val: obj.wx_user_id
+    }).exec();
+
+
+
+    // 微信用户投票等于10
+    if (wx_data.baby_vote >= 10) {
+      // 用户投票超上限
+      return {
+        ret: -1
+      }
+    }
+
+    // 微信用户投票统计
+    await WxUser.update({
+        val: obj.wx_user_id
+      }, {
+        $set: {
+          baby_vote: (wx_data.baby_vote + 1)
+        }
+      })
+      .exec();
+
+
+
+    // baby数据统计
+    var baby_data = await Baby.findOne({
+      baby_id: obj.baby_id
+    }).exec();
+
+    await Baby.update({
+        baby_id: obj.baby_id
+      }, {
+        $set: {
+          vote: (baby_data.vote + 1)
+        }
+      })
+      .exec();
+
+    // 总投票统计
+    await me._count("vote");
+    var vote_data = await Count.findOne({
+      key: "vote"
+    }).exec();
+
+    if (vote_data.val == conf.vote) {
+      // 获得大奖
+      return {
+        ret: conf.vote
+      }
+    }
+
+    // 用户正常投票
+    return {
+      ret: 0
+    }
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // --------------------------------------------------临时素材
   temp: async function(key, val, expires_in) {
     var me = this;

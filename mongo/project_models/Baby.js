@@ -10,6 +10,10 @@ var OriginalSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  "baby_id": {
+    type: Number,
+    default: 0
+  },
 });
 
 //model

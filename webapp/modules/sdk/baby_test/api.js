@@ -1,6 +1,6 @@
 var API = {
   // 统计数据
-  hot:function(obj) {
+  hot: function(obj) {
     return $.ajax({
       url: "/api/baby/hot_count",
       dataType: "json",
@@ -29,5 +29,23 @@ var API = {
       contentType: false,
       beforeSend: function() {},
     });
+  },
+  // list
+  list: function(obj) {
+    return $.ajax({
+      url: "/api/baby/list",
+      dataType: "json",
+      type: "POST",
+      data: obj
+    })
+  },
+  // 投票
+  vote: function(obj) {
+    return $.ajax({
+      url: "/api/baby/vote",
+      dataType: "json",
+      type: "POST",
+      data: obj
+    })
   },
 };
