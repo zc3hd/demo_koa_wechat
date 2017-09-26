@@ -11,6 +11,11 @@ var WxUserSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // 备注
+  "memo": {
+    type: String,
+    default: ""
+  },
 });
 
 //model

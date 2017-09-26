@@ -468,6 +468,8 @@ not supported by any browser */
   height: 100%;
   border: none;
   border-radius: 5px;
+  box-sizing: border-box;
+  padding-left: 20px;
 }
 
 #app>.main>.ipt>div:nth-child(2) {
@@ -1093,12 +1095,46 @@ not supported by any browser */
 #winner>div.title{
   width: 100%;
   position: relative;
+  margin-top: 10px;
   box-sizing: border-box;
   margin-bottom: 4px;
   text-align: center;
 }
 
 #winner>input{
+  width: 99%;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+/* -----------------------------------------------获得者广告提醒 */
+.winner_tips{
+  background-color: rgb(251,157,42);
+  font-weight: 600;
+}
+
+.winner_tips>div.title>span{
+  font-size: 2.0rem;
+}
+
+/* -----------------------------------------------搜索宝宝 */
+.search_baby{
+  width: 100%;
+  height: 100%;
+  background-color: rgb(251,157,42);
+  color: #fff;
+  
+  overflow-y: auto;
+}
+.search_baby>div{
+  width: 100%;
+  margin-top: 10px;
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.search_baby>input{
   width: 99%;
   height: 30px;
   margin-bottom: 5px;

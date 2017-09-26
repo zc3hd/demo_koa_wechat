@@ -14,8 +14,9 @@ var Busboy = require('busboy');
 
 var conf = {
   path: path.join(__dirname, '../webapp/modules/sdk/baby_test/img/bady'),
-  vote:36,
-}
+  vote: 44,
+  pay: 50,
+};
 
 // ---------------------------数据库
 // 微信用户
@@ -24,6 +25,8 @@ var WxUser = require('../mongo/models/WxUser.js');
 var Baby = require('../mongo/project_models/Baby.js');
 // 统计
 var Count = require('../mongo/project_models/Count.js');
+// 配置
+var Conf = require('../mongo/project_models/Conf.js');
 
 
 
@@ -84,6 +87,65 @@ Baby_main.prototype = {
     return WxUser.findOne({
       val: val
     }).exec();
+  },
+  // 支线中奖信息保存
+  wx_winner: async function(obj) {
+    var me = this;
+    await Conf.update({
+        key: 'wx_winner'
+      }, {
+        $set: {
+          val: JSON.stringify({
+            level: obj.level,
+            pay: obj.pay,
+            phone: obj.phone,
+            nickname: obj.nickname,
+          }),
+          expires_in: (new Date().getTime() + 24 * 3600 * 1000)
+        }
+      })
+      .exec();
+
+
+    return {
+      ret: 1
+    };
+  },
+  // 广播获奖者
+  wx_winner_tips: async function() {
+    var me = this;
+    var data_winner = await Conf.findOne({
+        key: 'wx_winner'
+      })
+      .exec();
+
+    // 下次支线任务
+
+    var data_level = await Conf.findOne({
+      key: "level"
+    }).exec();
+
+    var data_pay = await Conf.findOne({
+      key: "pay"
+    }).exec();
+
+
+    var now = new Date().getTime();
+    // 还有效
+    if (now < data_winner.expires_in) {
+      return {
+        winner: 1,
+        info: data_winner.val,
+        level: data_level.val,
+        pay: data_pay.val,
+      };
+    } else {
+      return {
+        winner: 0,
+        level: data_level.val,
+        pay: data_pay.val,
+      };
+    }
   },
   // ----------------------------------------报名
   // 上传到本地文件
@@ -166,6 +228,17 @@ Baby_main.prototype = {
       rows: data
     };
   },
+  // -----------------------------------------排名列表
+  _level_list: async function() {
+    var me = this;
+    // 查询数据
+    return await Baby.find()
+      .sort({
+        vote: -1
+      })
+      .limit(60)
+      .exec();
+  },
   // -----------------------------------------投票
   _vote: async function(obj) {
     var me = this;
@@ -177,7 +250,7 @@ Baby_main.prototype = {
 
 
 
-    // 微信用户投票等于10
+    // ------------------微信用户投票等于10
     if (wx_data.baby_vote >= 10) {
       // 用户投票超上限
       return {
@@ -185,7 +258,7 @@ Baby_main.prototype = {
       }
     }
 
-    // 微信用户投票统计
+    // ----------------------微信用户投票统计
     await WxUser.update({
         val: obj.wx_user_id
       }, {
@@ -194,10 +267,7 @@ Baby_main.prototype = {
         }
       })
       .exec();
-
-
-
-    // baby数据统计
+    // ------------------------baby数据统计
     var baby_data = await Baby.findOne({
       baby_id: obj.baby_id
     }).exec();
@@ -210,24 +280,128 @@ Baby_main.prototype = {
         }
       })
       .exec();
-
-    // 总投票统计
+    // --------------------------总投票统计
     await me._count("vote");
     var vote_data = await Count.findOne({
       key: "vote"
     }).exec();
 
-    if (vote_data.val == conf.vote) {
+
+    // ------------------------------------支线任务读取
+    var data_level = await Conf.findOne({
+      key: "level"
+    }).exec();
+
+    var data_pay = await Conf.findOne({
+      key: "pay"
+    }).exec();
+
+    // 预设的获得者达到要求
+    if (vote_data.val == data_level.val) {
+      // 根变数据
+      await Conf.update({
+          key: "level"
+        }, {
+          $set: {
+            val: (data_level.val * 1 + 3000) + ''
+          }
+        })
+        .exec();
+
+
+      // 根变数据
+      await Conf.update({
+          key: "pay"
+        }, {
+          $set: {
+            val: (data_pay.val * 1 + 10) + ""
+          }
+        })
+        .exec();
+
       // 获得大奖
       return {
-        ret: conf.vote
+        ret: data_level.val,
+        pay: data_pay.val,
       }
     }
-
-    // 用户正常投票
+    // -------------------------------------用户正常投票
     return {
       ret: 0
     }
+  },
+  // -----------------------------------------投票
+  _search: async function(obj) {
+    var me = this;
+    // ------------------------baby数据统计
+    var baby_data = await Baby.findOne({
+      baby_id: obj.baby_id
+    }).exec();
+
+    // 查到数据
+    if (baby_data) {
+      return baby_data;
+    }
+    // 查不到数据
+    else {
+      return {
+        ret: -1
+      };
+    }
+  },
+  // ---------------------------------------活动信息
+  _info: async function() {
+    var me = this;
+    // 活动开始时间
+    var start_data = await Conf.findOne({
+      key: "start"
+    }).exec();
+
+    var end_data = await Conf.findOne({
+      key: "end"
+    }).exec();
+
+    var notice_data = await Conf.findOne({
+      key: "notice"
+    }).exec();
+
+    var receive_start_data = await Conf.findOne({
+      key: "receive_start"
+    }).exec();
+
+    var receive_end_data = await Conf.findOne({
+      key: "receive_end"
+    }).exec();
+
+    var guan_data = await Conf.findOne({
+      key: "guan"
+    }).exec();
+
+    var ya_data = await Conf.findOne({
+      key: "ya"
+    }).exec();
+
+    var ji_data = await Conf.findOne({
+      key: "ji"
+    }).exec();
+
+    var renqi_data = await Conf.findOne({
+      key: "renqi"
+    }).exec();
+
+    return {
+      start: start_data.expires_in,
+      end: end_data.expires_in,
+      notice: notice_data.expires_in,
+      receive_start: receive_start_data.expires_in,
+      receive_end: receive_end_data.expires_in,
+      guan: guan_data.val,
+      ya: ya_data.val,
+      ji: ji_data.val,
+      renqi: renqi_data.val,
+    }
+
+
   },
 
 

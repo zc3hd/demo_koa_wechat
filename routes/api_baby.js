@@ -7,9 +7,7 @@ const router = require('koa-router')();
 
 
 router.prefix('/api/baby');
-
-
-// 统计数据
+// ----------------------------------------------统计数据显示
 router.post('/hot_count', async function(ctx, next) {
   // console.log(ctx.request.body);
   var data = await new Baby()._all();
@@ -18,7 +16,9 @@ router.post('/hot_count', async function(ctx, next) {
 
 
 
-// 新增微信用户
+
+
+// ----------------------------------------------新增微信用户
 router.post('/add_wx_user', async function(ctx, next) {
   // 访客数据
   await new Baby()._count("views");
@@ -27,8 +27,25 @@ router.post('/add_wx_user', async function(ctx, next) {
   ctx.body = data;
 });
 
+// -----------------------------------------------支线信息提交
+router.post('/wx_winner', async function(ctx, next) {
+  var data = await new Baby().wx_winner(ctx.request.body);
+  ctx.body =  data;
+});
 
-// 添加宝宝
+
+// -----------------------------------------------支线信息提交
+router.post('/wx_winner_tips', async function(ctx, next) {
+  var data = await new Baby().wx_winner_tips();
+  ctx.body =  data;
+});
+
+
+
+
+
+
+// -----------------------------------------------添加宝宝
 router.post('/add_baby', async function(ctx, next) {
   // 报名数据
   await new Baby()._count("num");
@@ -40,18 +57,41 @@ router.post('/add_baby', async function(ctx, next) {
 });
 
 
-// 宝宝列表
+// -----------------------------------------------宝宝列表
 router.post('/list', async function(ctx, next) {
   var data = await new Baby()._list(ctx.request.body);
   ctx.body =  data;
 });
 
+// -----------------------------------------------宝宝排名
+router.post('/level_list', async function(ctx, next) {
+  var data = await new Baby()._level_list();
+  ctx.body =  data;
+});
 
-// 添加投票
+
+// -----------------------------------------------添加投票
 router.post('/vote', async function(ctx, next) {
   var data = await new Baby()._vote(ctx.request.body);
   ctx.body =  data;
 });
+
+
+// -----------------------------------------------搜索
+router.post('/search', async function(ctx, next) {
+  var data = await new Baby()._search(ctx.request.body);
+  ctx.body =  data;
+});
+
+
+
+
+// -----------------------------------------------活动信息
+router.post('/info', async function(ctx, next) {
+  var data = await new Baby()._info();
+  ctx.body =  data;
+});
+
 
 
 
