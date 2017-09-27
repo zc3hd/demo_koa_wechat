@@ -30,17 +30,6 @@
 
       // nav
       me._nav('main');
-
-      // 收集微信用户
-      me._wx_user(function() {
-        // 统计数据
-        me._hot();
-        // 可以添加宝宝了
-        me._add();
-      });
-
-
-
     },
     // ------------------------------------------------广告区
     // 轮播图
@@ -64,8 +53,6 @@
         son: '#adv'
       });
     },
-
-
     // --------------------------------------------------获得者的提醒
     _winner_tips: function() {
       var me = this;
@@ -111,7 +98,7 @@
         }
       });
     },
-    // 开启支线广告
+    // 开启支线任务
     _branch_adv: function(data) {
       var me = this;
       // 支线任务
@@ -156,55 +143,43 @@
         me._adv(obj);
       }, n * 13 * 1000);
     },
-
-
-
-
-    // -------------------------------------------------统计数据
-    _hot: function() {
-      var me = this;
-      API.hot()
-        .done(function(arr) {
-          arr.forEach(function(item, index) {
-            if (item.key == 'num') {
-              $('#num').html(item.val)
-            }
-            if (item.key == 'vote') {
-              $('#vote').html(item.val)
-            }
-            if (item.key == 'views') {
-              $('#views').html(item.val)
-            }
-          });
-        })
+    // ---------------------------------------------事件完成后的函数
+    // 加载层
+    _load: function() {
+      return layer.load(0, { shade: 0.5 });
     },
-    // -------------------------------------------------收集微信用户
-    _wx_user: function(cb) {
+    _event_done: function(argument) {
       var me = this;
-      // 用户信息
-      var FromUserName = common_fn.getParam('FromUserName');
+      // 统计数据
+      me._hot();
 
-      API.wx_user({
-          val: FromUserName,
-          baby: 1
-        })
-        .done(function(data) {
-          // 新增成功
-          if (data.val) {
-            // 记录微信用户
-            me.wx_user_id = data.val;
-            cb();
-          }
-        })
+      // 加载
+      var layer_load = me._load();
+      if (me.key == 'main') {
+        // 数据列表
+        me._main(layer_load);
+      }
+      // 排行列表
+      else if (me.key == 'level') {
+        me._level(layer_load);
+      }
+      // 赛事说明
+      else if (me.key == 'info') {
+        me._info(layer_load);
+      }
+      // 商家入口
+      else if (me.key == 'reg') {
+
+        me._reg(layer_load);
+      }
     },
-
 
     // ------------------------------------------------导航
     // nav
     _nav: function(key) {
       var me = this;
       // 加载
-      me._nav_load(key, layer.load(0, { shade: 0.5 }));
+      me._nav_load(key, me._load());
       // 点击事件
       $('#app>.nav>div').on('click', function(e) {
         // ------------css
@@ -217,18 +192,8 @@
         $('#app>.nav>div').removeClass('active');
         $(e.currentTarget).addClass('active');
 
-        // 报名和热度框
-        $('#apply,#hot').show();
-
-        // 商家合作--报名和热度框
-        if (attr_key == 'reg') {
-          $('#apply,#hot').hide();
-        }
-
-
         // -------------js
-        var layer_load = layer.load(0, { shade: 0.5 });
-        me._nav_load(attr_key, layer_load);
+        me._nav_load(attr_key, me._load());
       });
     },
     // 菜单加载
@@ -257,50 +222,148 @@
         }
       });
     },
-    // -----------------------------------------------------报名入口
-    _add: function() {
+    // ------------------------------------------------------------------主页展示
+    // 数据展示
+    _main: function(layer_load) {
       var me = this;
 
-      var str = `
-      <div id="add_baby">
-        <div>
-          <div>宝宝姓名</div>
-          <input type="text" placeholder="字数不超过6个字" id="baby_name">
-        </div>
-        <div>
-          <div>家长姓名</div>
-          <input type="text" placeholder="请输入家长姓名" id="p_name">
-        </div>
-        <div>
-          <div>联系电话</div>
-          <input type="text" placeholder="请输入联系电话" id="p_phone">
-        </div>
-        <div>
-          <div>上传照片</div>
-          <input type="file" id="baby_img">
-        </div>
-        <div class="info">
-          上传图片大小不允超过1M</br>
-          以上全部为必输入项
-        </div>
-      </div>
-      `;
+      var load_add = me._load();
+      // 收集微信用户
+      me._wx_user(function() {
+        // 统计数据
+        me._hot();
+        // 可以添加宝宝了
+        me._add();
 
-      $('#apply').on('click', function() {
-        layer.open({
-          title: '宝宝报名',
-          area: ['90%', '50%'],
-          shade: 0.6,
-          closeBtn: 2,
-          anim: 2,
-          content: str,
-          success: function(layero, index) {},
-          btn: ['报名'],
-          yes: function(index, layero) {
-            me._add_yes(index);
-          }
-        });
+        layer.close(load_add);
       });
+
+      // 展示列表
+      me._mian_list(1, layer_load);
+      // 分页按钮事件
+      me._page_event();
+      // 投票行为
+      me._list_vote_event();
+      // 搜索宝宝
+      me._search();
+
+      // 从新搜索
+      if ($('#search_num').val()) {
+        // 重新搜索数据
+        me._search_done($('#search_num').val());
+      }
+    },
+    // ---------------------------------------------收集微信用户
+    _wx_user: function(cb) {
+      var me = this;
+      // 用户信息
+      var FromUserName = common_fn.getParam('FromUserName');
+
+      API.wx_user({
+          val: FromUserName,
+        })
+        .done(function(data) {
+          // 记录微信用户
+          me.wx_user_id = data.wx.val;
+
+          // 微信的报名baby
+          me.wx_baby = data.baby;
+
+          // 排名
+          me.wx_baby_level = data.level;
+
+          cb();
+        });
+    },
+    // --------------------------------------------统计数据
+    _hot: function() {
+      var me = this;
+      API.hot()
+        .done(function(arr) {
+          arr.forEach(function(item, index) {
+            if (item.key == 'num') {
+              $('#num').html(item.val)
+            }
+            if (item.key == 'vote') {
+              $('#vote').html(item.val)
+            }
+            if (item.key == 'views') {
+              $('#views').html(item.val)
+            }
+          });
+        })
+    },
+    // --------------------------------------------报名入口
+    _add: function() {
+      var me = this;
+      // --------------------------没有报名
+      if (!me.wx_baby) {
+        // 标题
+        $('#apply_title').html('宝宝报名入口');
+
+        // 具体信息隐藏
+        $('#app>.main>.wx_baby').hide();
+
+        var str = `
+        <div id="add_baby">
+          <div>
+            <div>宝宝姓名</div>
+            <input type="text" placeholder="字数不超过6个字" id="baby_name">
+          </div>
+          <div>
+            <div>家长姓名</div>
+            <input type="text" placeholder="请输入家长姓名" id="p_name">
+          </div>
+          <div>
+            <div>联系电话</div>
+            <input type="text" placeholder="请输入联系电话" id="p_phone">
+          </div>
+          <div>
+            <div>上传照片</div>
+            <input type="file" id="baby_img">
+          </div>
+          <div class="info">
+            上传图片大小不允超过1M</br>
+            以上全部为必输入项
+          </div>
+        </div>
+        `;
+        $('#apply').off().on('click', function() {
+          layer.open({
+            title: '宝宝报名',
+            area: ['90%', '50%'],
+            shade: 0.6,
+            closeBtn: 2,
+            anim: 2,
+            content: str,
+            success: function(layero, index) {},
+            btn: ['报名'],
+            yes: function(index, layero) {
+              me._add_yes(index);
+            }
+          });
+        });
+      }
+      // ---------------------------已经报名
+      else {
+        // 标题
+        $('#apply_title').html(`${me.wx_baby.baby_id}号 ${me.wx_baby.baby_name}`);
+
+        // 具体信息显示
+        $('#app>.main>.wx_baby').show();
+
+        // 票数
+        $('#wx_baby_vote').html(me.wx_baby.vote);
+
+        // 排名
+        $('#wx_baby_level').html(me.wx_baby_level);
+
+        // 绑定ID
+        $('#wx_one_vote').attr('key', me.wx_baby.baby_id);
+
+        // 单独投票行为
+        me._vote_yes();
+      }
     },
     // 确认添加
     _add_yes: function(index) {
@@ -368,10 +431,12 @@
         });
         return;
       }
+
+
       // ---------------------------------------------
-
-
       var obj = {
+        // 绑定到当前微信用户上
+        wx_user_id: me.wx_user_id,
         baby_name: baby_name,
         p_name: p_name,
         p_phone: p_phone,
@@ -383,6 +448,8 @@
         formData.append(k, obj[k]);
       }
 
+      // load
+      me.layer_load = me._load();
       API.add_baby(formData)
         .done(function(data) {
           if (data._id) {
@@ -390,50 +457,23 @@
             layer.msg('宝宝报名成功');
             layer.close(index);
 
+            // 关闭加载层
+            layer.close(me.layer_load);
+
             // 事件完成后的函数
             me._event_done();
           }
         });
     },
-    // -----------------------------------------------------事件完成后的函数
-    _event_done: function(argument) {
+    // 单独投票行为
+    _vote_yes: function() {
       var me = this;
-      // 统计数据
-      me._hot();
-
-      // 加载
-      var layer_load = layer.load(0, { shade: 0.5 });
-      if (me.key == 'main') {
-        // 数据列表
-        me._main(layer_load);
-      }
-      // 排行列表
-      else if (me.key == 'level') {
-        me._level(layer_load);
-      }
-      // 赛事说明
-      else if (me.key == 'info') {
-        me._info(layer_load);
-      }
-      // 商家入口
-      else if (me.key == 'reg') {
-
-        me._reg(layer_load);
-      }
-    },
-
-    // ------------------------------------------------------------------主页展示
-    // 数据展示
-    _main: function(layer_load) {
-      var me = this;
-      // 展示列表
-      me._mian_list(1, layer_load);
-      // 分页按钮事件
-      me._page_event();
-      // 投票行为
-      me._vote_event();
-      // 搜索宝宝
-      me._search();
+      var baby_id = null;
+      $('#wx_one_vote').off().on('click', function(e) {
+        // 拿到babyid
+        baby_id = $(e.currentTarget).attr('key');
+        me._vote_event_ajax(baby_id);
+      });
     },
     // ------------------------------------------展示列表
     _mian_list: function(page, layer_load) {
@@ -519,7 +559,7 @@
         }
         page = $('#active_page').html() * 1 - 1;
         $('#active_page').html(page);
-        me._mian_list(page, layer.load(0, { shade: 0.5 }));
+        me._mian_list(page, me._load());
       });
 
       // 下一页
@@ -530,11 +570,11 @@
         }
         page = $('#active_page').html() * 1 + 1;
         $('#active_page').html(page);
-        me._mian_list(page, layer.load(0, { shade: 0.5 }));
+        me._mian_list(page, me._load());
       });
     },
-    // ------------------------------------------投票行为
-    _vote_event: function() {
+    // ------------------------------------------列表投票行为
+    _list_vote_event: function() {
       var me = this;
       var baby_id = null;
       $('#device').off().on('click', '.click_vote', function(e) {
@@ -546,12 +586,17 @@
     // 投票行为ajax
     _vote_event_ajax: function(baby_id) {
       var me = this;
+
+      me.layer_load = me._load();
       API.vote({
           baby_id: baby_id,
           wx_user_id: me.wx_user_id
         })
         .done(function(data) {
+          layer.close(me.layer_load);
           if (data.ret == 0) {
+
+
             layer.msg('投票成功');
 
             // 事件完成后的函数
@@ -674,6 +719,7 @@
     // 进行搜索
     _search_done: function(baby_id) {
       var me = this;
+      me.layer_load = me._load();
       API.search({
         baby_id: baby_id
       }).done(function(data) {
@@ -682,53 +728,48 @@
           layer.tips('未搜索到您输入的编号~~', '#search_num', {
             tips: 1
           });
+          return;
         }
         // 找到宝宝
         else {
           me._search_yes(data)
         }
+        layer.close(me.layer_load);
       });
     },
-    // 收到数据
+    // 搜索到数据
     _search_yes: function(data) {
       var me = this;
-      var str = `
-      <div class="search_baby">
-        <div>
-        ${data.baby_id}号 ${data.baby_name}
-        </div>
-        <div>
-          <img src="./img/bady/${data.baby_img}" style="width:95%;height:auto" />
-        </div>
-        <div>
-          目前票数：${data.vote} 票
-        </div>
-      </div>
-      `;
-      layer.open({
-        title: data.baby_name + " 信息",
-        area: ['90%', '80%'],
-        shade: 0.6,
-        closeBtn: 2,
-        anim: 2,
-        content: str,
-        success: function(layero, index) {},
-        btn: ['投票'],
-        yes: function(index, layero) {
-          layer.close(index);
-          me._vote_event_ajax(data.baby_id);
-        }
+      $('#search_baby_info').hide(100).show(200);
+      $('#search_baby_name').html(`${data.baby.baby_name}`);
+      $('#search_baby_vote').html(`${data.baby.vote}`);
+      $('#search_baby_level').html(`${data.level}`);
+
+      // 绑定ID
+      $('#search_one_vote').attr('key', data.baby.baby_id);
+
+      // me.search_baby_id = data.baby.baby_id;
+      // 单独投票行为
+      me._search_vote_yes();
+    },
+    // 单独投票行为
+    _search_vote_yes: function() {
+      var me = this;
+      var baby_id = null;
+      $('#search_one_vote').off().on('click', function(e) {
+        // 拿到babyid
+        baby_id = $(e.currentTarget).attr('key');
+        me._vote_event_ajax(baby_id);
       });
     },
     // ------------------------------------------------------------------排行信息
     _level: function(layer_load) {
       var me = this;
-      layer.close(layer_load);
       // 展示
-      me._level_list();
+      me._level_list(layer_load);
     },
     // 列表请求
-    _level_list: function() {
+    _level_list: function(layer_load) {
       var me = this;
       API.level_list()
         .done(function(data) {
@@ -739,6 +780,8 @@
 
           // 投票事件
           me._level_list_vote();
+
+          layer.close(layer_load);
         });
     },
     // 当前宝座
@@ -817,13 +860,11 @@
     // ------------------------------------------------------------------赛事说明
     _info: function(layer_load) {
       var me = this;
-      layer.close(layer_load);
-
-      // 活动时间
-      me._info_ajax();
+      // 活动信息
+      me._info_ajax(layer_load);
     },
     // 活动信息
-    _info_ajax: function() {
+    _info_ajax: function(layer_load) {
       var me = this;
       API.info()
         .done(function(data) {
@@ -855,16 +896,75 @@
           $('#ji').html(data.ji);
           $('#renqi').html(data.renqi);
 
+          layer.close(layer_load);
         });
     },
-    // -----------------------------------商家入口
+    // -------------------------------------------------------------------商家入口
     _reg: function(layer_load) {
       var me = this;
       layer.close(layer_load);
-      
-      // me._reg_other_teamwork();
-    },
+      // 其他合作方式
+      me._reg_other();
 
+      me._reg_top();
+    },
+    // 其他合作方式
+    _reg_other: function() {
+      var me = this;
+      $('#other_teamwork').off().on('click', function(argument) {
+        var str = `
+        <div class="other_teamwork">
+          <img src="./img/admin.jpg" style="width:90%;height:auto" />
+        </div>
+        `;
+        layer.open({
+          title: "长按二维码找到管理员",
+          area: ['90%', '60%'],
+          shade: 0.6,
+          closeBtn: 2,
+          anim: 2,
+          content: str,
+          success: function(layero, index) {},
+          btn: ['关闭'],
+          yes: function(index, layero) {
+            layer.close(index);
+          }
+        });
+      });
+    },
+    // 顶部实时广告
+    _reg_top: function() {
+      var me = this;
+      var str = `
+      <div id="add_baby">
+        <div>
+          <div>商家名称</div>
+          <input type="text" placeholder="字数不超过10个字" id="business_name">
+        </div>
+        <div>
+          <div>商家活动</div>
+          <input type="text" placeholder="字数不超过200个字" id="business_activity">
+        </div>
+      </div>
+      `;
+
+      $('#top_teamwork').off().on('click', function(argument) {
+        layer.open({
+          title: '宝宝报名',
+          area: ['90%', '50%'],
+          shade: 0.6,
+          closeBtn: 2,
+          anim: 2,
+          content: str,
+          success: function(layero, index) {},
+          btn: ['报名'],
+          yes: function(index, layero) {
+            me._add_yes(index);
+          }
+        });
+      });
+
+    },
 
   };
   conf.module["Main_html"] = Main_html;

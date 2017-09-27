@@ -324,9 +324,17 @@ not supported by any browser */
 }
 
 
-/* ----------------------------------------------------用户报名 */
+/* ------------------------------------------------------------main */
 
-#app>.apply {
+#app>.main {
+  width: 100%;
+  background: #4390EE;
+}
+
+
+/* -----------------------用户报名 */
+
+#app>.main>.apply {
   width: 100%;
   height: 80px;
   box-sizing: border-box;
@@ -336,7 +344,7 @@ not supported by any browser */
   background-color: #43afee;
 }
 
-#app>.apply>div {
+#app>.main>.apply>div {
   width: 100%;
   height: 100%;
   border-radius: 10px;
@@ -347,7 +355,7 @@ not supported by any browser */
   padding-right: 70px;
 }
 
-#app>.apply>div>div.bb_nav_heart {
+#app>.main>.apply>div>div.bb_nav_heart {
   width: 70px;
   height: 100%;
   position: absolute;
@@ -360,15 +368,15 @@ not supported by any browser */
   animation: font_change 4s forwards 1s infinite;
 }
 
-#app>.apply>div>div:nth-child(1) {
+#app>.main>.apply>div>div:nth-child(1) {
   left: 0;
 }
 
-#app>.apply>div>div:nth-child(3) {
+#app>.main>.apply>div>div:nth-child(3) {
   right: 0;
 }
 
-#app>.apply>div>div:nth-child(2) {
+#app>.main>.apply>div>div:nth-child(2) {
   width: 100%;
   height: 100%;
   line-height: 70px;
@@ -378,9 +386,52 @@ not supported by any browser */
 }
 
 
+/* --------------------------报名完成的宝宝信息 */
+
+#app>.main>.wx_baby {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #68bdee;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#app>.main>.wx_baby>div {
+  width: 100%;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+}
+
+#app>.main>.wx_baby>div>div {
+  font-size: 1.4rem;
+  background-color: #ff2424;
+  color: #fff;
+  border-radius: 5px;
+  width: 20%;
+  height: 100%;
+  float: left;
+  box-sizing: border-box;
+}
+#app>.main>.wx_baby>div>div>span{
+  font-size: 2.4rem;
+}
+#app>.main>.wx_baby>div>div.vote {
+  width: 50%;
+  border-right: 1px solid #68bdee;
+}
+
+#app>.main>.wx_baby>div>div.level {
+  width: 30%;
+  border-right: 1px solid #68bdee;
+}
+
+
 /* --------------------------数据hot */
 
-#app>.hot {
+#app>.main>.hot {
   width: 100%;
   height: 100px;
   box-sizing: border-box;
@@ -388,7 +439,7 @@ not supported by any browser */
   background-color: #86c5ea;
 }
 
-#app>.hot>div {
+#app>.main>.hot>div {
   width: 100%;
   height: 100%;
   border-radius: 10px;
@@ -396,7 +447,7 @@ not supported by any browser */
   position: relative;
 }
 
-#app>.hot>div>div {
+#app>.main>.hot>div>div {
   position: absolute;
   top: 0;
   left: 0;
@@ -404,19 +455,19 @@ not supported by any browser */
   height: 100%;
 }
 
-#app>.hot>div>div.num {
+#app>.main>.hot>div>div.num {
   left: 0;
 }
 
-#app>.hot>div>div.vote {
+#app>.main>.hot>div>div.vote {
   left: 33%;
 }
 
-#app>.hot>div>div.views {
+#app>.main>.hot>div>div.views {
   left: 66%;
 }
 
-#app>.hot>div>div>div:nth-child(1) {
+#app>.main>.hot>div>div>div:nth-child(1) {
   height: 40%;
   text-align: center;
   font-weight: 800;
@@ -424,20 +475,12 @@ not supported by any browser */
   color: rgb(28, 27, 32);
 }
 
-#app>.hot>div>div>div:nth-child(2) {
+#app>.main>.hot>div>div>div:nth-child(2) {
   height: 60%;
   text-align: center;
   font-weight: 800;
   font-size: 2.2rem;
   color: #4390EE;
-}
-
-
-/* ------------------------------------------------------------main */
-
-#app>.main {
-  width: 100%;
-  background: #4390EE;
 }
 
 
@@ -489,8 +532,46 @@ not supported by any browser */
   font-size: 1.6rem;
 }
 
+/* --------------------------搜索到的宝宝信息 */
 
-/* --------------------------活动时间 */
+#app>.main>.search_baby {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #68bdee;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: none;
+}
+
+#app>.main>.search_baby>div {
+  width: 100%;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+}
+
+#app>.main>.search_baby>div>div {
+  font-size: 1.4rem;
+  background-color: #ff2424;
+  color: #fff;
+  border-radius: 5px;
+  width: 25%;
+  height: 100%;
+  float: left;
+  box-sizing: border-box;
+  border-right: 1px solid #68bdee;
+}
+#app>.main>.search_baby>div>div>span{
+  font-size: 2.4rem;
+}
+#app>.main>.search_baby>div>div:nth-child(4) {
+  border-right: none;
+}
+
+
+/* --------------------------宝宝列表标题 */
 
 #app>.main>.info {
   width: 100%;
@@ -506,7 +587,8 @@ not supported by any browser */
 #app>.main>.info>div {
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-color: #114f74;
+  color: #fff;
   border-radius: 5px;
   line-height: 30px;
   text-align: center;
@@ -985,8 +1067,6 @@ not supported by any browser */
 
 /* --------------------------------------------------------商家具体选择 */
 
-
-
 #app>.main>.input {
   width: 100%;
   box-sizing: border-box;
@@ -1038,18 +1118,28 @@ not supported by any browser */
   font-size: 2.4rem;
 }
 
-
+#app>.main>.input>div.info>div:nth-child(2) {
+  line-height: 50px;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  /* color: #114f74; */
+  color: #fff;
+  font-size: 1.5rem;
+}
 
 
 /* -----------------------------------------------新增宝宝 */
-#add_baby{
+
+#add_baby {
   width: 100%;
   height: 100%;
   color: #114f74;
   font-size: 1.4rem;
   overflow-y: auto;
 }
-#add_baby>div{
+
+#add_baby>div {
   width: 100%;
   height: 30px;
   position: relative;
@@ -1058,22 +1148,22 @@ not supported by any browser */
   margin-bottom: 4px;
 }
 
-#add_baby>div>div{
+#add_baby>div>div {
   position: absolute;
-  top:0;
+  top: 0;
   left: 0;
   width: 100px;
   height: 100%;
-
   line-height: 30px;
   text-align: center;
 }
-#add_baby>div>input{
+
+#add_baby>div>input {
   width: 90%;
   height: 90%;
 }
 
-#add_baby>.info{
+#add_baby>.info {
   width: 100%;
   height: 60px;
   padding-left: 0;
@@ -1085,14 +1175,16 @@ not supported by any browser */
 
 
 /* -----------------------------------------------支线获得者 */
-#winner{
+
+#winner {
   width: 100%;
   height: 100%;
   color: #114f74;
   font-size: 1.4rem;
   overflow-y: auto;
 }
-#winner>div.title{
+
+#winner>div.title {
   width: 100%;
   position: relative;
   margin-top: 10px;
@@ -1101,41 +1193,29 @@ not supported by any browser */
   text-align: center;
 }
 
-#winner>input{
+#winner>input {
   width: 99%;
   height: 30px;
   margin-bottom: 5px;
 }
 
+
 /* -----------------------------------------------获得者广告提醒 */
-.winner_tips{
-  background-color: rgb(251,157,42);
+
+.winner_tips {
+  background-color: rgb(251, 157, 42);
   font-weight: 600;
 }
 
-.winner_tips>div.title>span{
+.winner_tips>div.title>span {
   font-size: 2.0rem;
 }
 
-/* -----------------------------------------------搜索宝宝 */
-.search_baby{
+/* -----------------------------------------------其他合作方式 */
+
+.other_teamwork {
   width: 100%;
   height: 100%;
-  background-color: rgb(251,157,42);
-  color: #fff;
-  
-  overflow-y: auto;
-}
-.search_baby>div{
-  width: 100%;
-  margin-top: 10px;
-  font-size: 2.2rem;
-  font-weight: 600;
   text-align: center;
-}
-
-.search_baby>input{
-  width: 99%;
-  height: 30px;
-  margin-bottom: 5px;
+  overflow-y: auto;
 }

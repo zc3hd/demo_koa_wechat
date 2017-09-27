@@ -20,7 +20,7 @@ var conf = {
 
 // ---------------------------数据库
 // 微信用户
-var WxUser = require('../mongo/models/WxUser.js');
+var WxUser = require('../mongo/project_models/WxUser.js');
 // baby
 var Baby = require('../mongo/project_models/Baby.js');
 // 统计
@@ -71,15 +71,53 @@ Baby_main.prototype = {
     if (data == null) {
       echo = await WxUser.create({
         val: obj.val,
-        baby: obj.baby
       }).then();
+
+      // 回复
+      return {
+        wx: echo,
+        baby: null
+      };
     }
     // 这个用户存在
     else {
       echo = data;
+
+      // 宝宝信息
+      var baby_data = await Baby.findOne({
+        baby_id: data.baby
+      }).exec();
+
+      // ----------------------------没有查询到数据
+      if (!baby_data) {
+        return {
+          wx: echo,
+          baby: null
+        };
+      }
+
+      // -----------------------------查询到数据
+      // 排名
+      var level_data = await Baby.find({}, 'baby_id')
+        .sort({
+          vote: -1
+        })
+        .exec();
+      var level = null;
+      level_data.forEach(function(item, index) {
+        if (item.baby_id == baby_data.baby_id) {
+          level = index + 1;
+          return;
+        }
+      });
+
+      return {
+        wx: echo,
+        baby: baby_data,
+        level: level
+      };
     }
-    // 回复
-    return echo;
+
   },
   // 查找微信用户
   find_wx_one: async function(val) {
@@ -200,11 +238,26 @@ Baby_main.prototype = {
   // 保存到数据库
   _save: async function(obj) {
     var me = this;
+
     var count = await Baby.count().exec();
+
+    // 宝宝编号
     obj.baby_id = count + 1;
-    // 要回复的数据
+    // 创建宝宝
     var echo = null;
     echo = await Baby.create(obj).then();
+
+    // 绑定微信用户
+    await WxUser.update({
+        val: obj.wx_user_id
+      }, {
+        $set: {
+          baby: obj.baby_id,
+        }
+      })
+      .exec();
+
+
     return echo;
   },
   // -----------------------------------------数据列表
@@ -267,6 +320,8 @@ Baby_main.prototype = {
         }
       })
       .exec();
+
+
     // ------------------------baby数据统计
     var baby_data = await Baby.findOne({
       baby_id: obj.baby_id
@@ -282,6 +337,8 @@ Baby_main.prototype = {
       .exec();
     // --------------------------总投票统计
     await me._count("vote");
+
+    // 读取
     var vote_data = await Count.findOne({
       key: "vote"
     }).exec();
@@ -330,17 +387,36 @@ Baby_main.prototype = {
       ret: 0
     }
   },
-  // -----------------------------------------投票
+  // -----------------------------------------搜索
   _search: async function(obj) {
     var me = this;
     // ------------------------baby数据统计
     var baby_data = await Baby.findOne({
       baby_id: obj.baby_id
-    }).exec();
+    }, 'baby_id baby_name vote').exec();
+
+    // -----------------------------查询到数据
+    // 排名
+    var level_data = await Baby.find({}, 'baby_id')
+      .sort({
+        vote: -1
+      })
+      .exec();
+
+    var level = null;
+    level_data.forEach(function(item, index) {
+      if (item.baby_id == obj.baby_id) {
+        level = index + 1;
+        return;
+      }
+    });
 
     // 查到数据
     if (baby_data) {
-      return baby_data;
+      return {
+        baby: baby_data,
+        level:level
+      };
     }
     // 查不到数据
     else {

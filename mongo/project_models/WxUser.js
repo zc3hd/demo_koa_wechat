@@ -2,19 +2,17 @@ var mongoose = require('mongoose');
 
 //schema
 var WxUserSchema = new mongoose.Schema({
+  // 微信的用户ID
   "val": String,
-  "baby": {
-    type: Number,
-    default: 0
-  },
+  // 可投票数
   "baby_vote": {
     type: Number,
     default: 0
   },
-  // 备注
-  "memo": {
-    type: String,
-    default: ""
+  // 绑定的baby
+  "baby": {
+    type: Number,
+    default: 0
   },
 });
 
