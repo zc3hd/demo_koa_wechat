@@ -2,20 +2,21 @@
   function Main_html() {
     var me = this;
 
+    // 主页列表数据加载显示开关
+    me.main_list_key = false;
+
+    // 路径配置
     me.set = {
       img_root: './img/bady/'
-    }
+    };
   };
   Main_html.prototype = {
     init: function() {
       var me = this;
-      // 
-      me.event();
 
-    },
-    // 事件
-    event: function() {
-      var me = this;
+      // 访问量计算
+      me._views();
+
       // 轮播图
       me._swiper();
 
@@ -30,6 +31,15 @@
 
       // nav
       me._nav('main');
+
+    },
+    // 访问量计算
+    _views: function() {
+      var me = this;
+      API.views()
+        .done(function(data) {
+
+        });
     },
     // ------------------------------------------------广告区
     // 轮播图
@@ -58,7 +68,7 @@
       var me = this;
       API.wx_winner_tips()
         .done(function(data) {
-          // 有获得者广播一天
+          // 有获得者--广播一天
           if (data.winner == 1) {
             me._winner_tips_yes(data);
           }
@@ -85,8 +95,9 @@
       `;
 
       layer.open({
+        offset: '35px',
         title: `恭喜${info.nickname}`,
-        area: ['90%', '65%'],
+        area: ['90%', '478px'],
         shade: 0.6,
         closeBtn: 2,
         anim: 2,
@@ -150,9 +161,6 @@
     },
     _event_done: function(argument) {
       var me = this;
-      // 统计数据
-      me._hot();
-
       // 加载
       var layer_load = me._load();
       if (me.key == 'main') {
@@ -204,6 +212,8 @@
 
         // 主页
         if (key == 'main') {
+          // 主页列表数据加载显示开关
+          me.main_list_key = false;
           // 数据列表
           me._main(layer_load);
         }
@@ -240,14 +250,18 @@
 
       // 展示列表
       me._mian_list(1, layer_load);
-      // 分页按钮事件
-      me._page_event();
+
       // 投票行为
       me._list_vote_event();
+
+      // 分页按钮事件
+      me._page_event();
+
+
       // 搜索宝宝
       me._search();
 
-      // 从新搜索
+      // 重新搜索搜索
       if ($('#search_num').val()) {
         // 重新搜索数据
         me._search_done($('#search_num').val());
@@ -293,7 +307,7 @@
           });
         })
     },
-    // --------------------------------------------报名入口
+    // --------------------------------------------报名入口（或展示自己的宝宝）
     _add: function() {
       var me = this;
       // --------------------------没有报名
@@ -330,8 +344,9 @@
         `;
         $('#apply').off().on('click', function() {
           layer.open({
+            offset: '35px',
             title: '宝宝报名',
-            area: ['90%', '50%'],
+            area: ['90%', '368px'],
             shade: 0.6,
             closeBtn: 2,
             anim: 2,
@@ -363,9 +378,10 @@
 
         // 单独投票行为
         me._vote_yes();
+
       }
     },
-    // 确认添加
+    // 没有报名的--确认添加
     _add_yes: function(index) {
       var me = this;
 
@@ -465,31 +481,52 @@
           }
         });
     },
-    // 单独投票行为
+    // 已经报名的--单独投票行为
     _vote_yes: function() {
       var me = this;
       var baby_id = null;
       $('#wx_one_vote').off().on('click', function(e) {
         // 拿到babyid
         baby_id = $(e.currentTarget).attr('key');
+        me.baby_id = baby_id;
         me._vote_event_ajax(baby_id);
       });
+    },
+    // 投票完成后直接修改列表的数据
+    _vote_done_list: function(vote) {
+      var me = this;
+      var str = $('#cc_' + me.baby_id).html();
+
+      // 不在页面内
+      if (!str) {
+        return;
+      }
+      // 在页面内
+      else {
+        $('#cc_' + me.baby_id).html(`${vote}票`);
+      }
     },
     // ------------------------------------------展示列表
     _mian_list: function(page, layer_load) {
       var me = this;
 
-      // 请求数据列表
-      API.list({
-          rows: 10,
-          page: page
-        })
-        .done(function(data) {
-          // 列表渲染
-          me._mian_list_draw(data.rows, layer_load);
-          // 分页渲染
-          me._mian_list_page(page, data.total);
-        });
+      // 没有加载数据
+      if (!me.main_list_key) {
+        // 请求数据列表
+        API.list({
+            rows: 10,
+            page: page
+          })
+          .done(function(data) {
+            // 列表渲染
+            me._mian_list_draw(data.rows, layer_load);
+            // 分页渲染--(页码/总页数)
+            me._mian_list_page(page, data.total);
+            // 主页列表显示开关
+            me.main_list_key = true;
+          });
+      }
+
     },
     // 列表绘制
     _mian_list_draw: function(arr, layer_load) {
@@ -506,7 +543,7 @@
           <div>
             <div>${item.baby_id}号 ${item.baby_name}</div>
             <div>
-              <div>${item.vote}票</div>
+              <div id='cc_${item.baby_id}'>${item.vote}票</div>
               <div class='click_vote' key='${item.baby_id}'>投一票</div>
             </div>
           </div>
@@ -557,6 +594,8 @@
           layer.msg('已到第一页');
           return
         }
+        // 恢复没有加载过数据
+        me.main_list_key = false;
         page = $('#active_page').html() * 1 - 1;
         $('#active_page').html(page);
         me._mian_list(page, me._load());
@@ -568,6 +607,9 @@
           layer.msg('已到最后一页');
           return
         }
+        // 恢复没有加载过数据
+        me.main_list_key = false;
+
         page = $('#active_page').html() * 1 + 1;
         $('#active_page').html(page);
         me._mian_list(page, me._load());
@@ -580,6 +622,10 @@
       $('#device').off().on('click', '.click_vote', function(e) {
         // 拿到babyid
         baby_id = $(e.currentTarget).attr('key');
+
+        // 记住这个ID
+        me.baby_id = baby_id;
+        // 投票行为ajax
         me._vote_event_ajax(baby_id);
       });
     },
@@ -601,6 +647,9 @@
 
             // 事件完成后的函数
             me._event_done();
+
+            // 投票完成后直接修改列表的数据
+            me._vote_done_list(data.vote)
           }
           // 超过上限
           else if (data.ret == -1) {
@@ -626,8 +675,9 @@
       `;
 
       layer.open({
+        offset: '35px',
         title: '恭喜恭喜，晚上吃鸡',
-        area: ['90%', '40%'],
+        area: ['90%', '295px'],
         shade: 0.6,
         closeBtn: 2,
         anim: 2,
@@ -657,8 +707,9 @@
       `;
 
       layer.open({
+        offset: '35px',
         title: '恭喜恭喜，晚上吃鸡',
-        area: ['90%', '85%'],
+        area: ['90%', '510px'],
         shade: 0.6,
         closeBtn: 2,
         anim: 2,
@@ -740,7 +791,7 @@
     // 搜索到数据
     _search_yes: function(data) {
       var me = this;
-      $('#search_baby_info').hide(100).show(200);
+      $('#search_baby_info').show(200);
       $('#search_baby_name').html(`${data.baby.baby_name}`);
       $('#search_baby_vote').html(`${data.baby.vote}`);
       $('#search_baby_level').html(`${data.level}`);
@@ -759,6 +810,7 @@
       $('#search_one_vote').off().on('click', function(e) {
         // 拿到babyid
         baby_id = $(e.currentTarget).attr('key');
+        me.baby_id = baby_id;
         me._vote_event_ajax(baby_id);
       });
     },
@@ -811,7 +863,7 @@
             <img src="./img/bady/${arr[k].baby_img}" alt="">
           </div>
           <div class="info">
-            <div>${arr[k].baby_name}</div>
+            <div>${arr[k].baby_id}号 ${arr[k].baby_name}</div>
             <div>${arr[k].vote}</div>
           </div>
         </div>
@@ -837,7 +889,7 @@
         str += `
         <div class="item">
           <div>${index+1}</div>
-          <div>${item.baby_name}</div>
+          <div>${item.baby_id}号-${item.baby_name}</div>
           <div>${item.vote} 票</div>
           <div>
             <div key ="${item.baby_id}" class="click_vote">投票</div>
@@ -918,8 +970,9 @@
         </div>
         `;
         layer.open({
+          offset: '35px',
           title: "长按二维码找到管理员",
-          area: ['90%', '60%'],
+          area: ['90%', '442px'],
           shade: 0.6,
           closeBtn: 2,
           anim: 2,
@@ -948,21 +1001,24 @@
       </div>
       `;
 
-      $('#top_teamwork').off().on('click', function(argument) {
-        layer.open({
-          title: '宝宝报名',
-          area: ['90%', '50%'],
-          shade: 0.6,
-          closeBtn: 2,
-          anim: 2,
-          content: str,
-          success: function(layero, index) {},
-          btn: ['报名'],
-          yes: function(index, layero) {
-            me._add_yes(index);
-          }
+      $('#top_teamwork')
+        .off()
+        .on('click', function(argument) {
+          layer.open({
+            offset: '35px',
+            title: '宝宝报名',
+            area: ['90%', '368px'],
+            shade: 0.6,
+            closeBtn: 2,
+            anim: 2,
+            content: str,
+            success: function(layero, index) {},
+            btn: ['报名'],
+            yes: function(index, layero) {
+              me._add_yes(index);
+            }
+          });
         });
-      });
 
     },
 

@@ -152,17 +152,16 @@ Baby_main.prototype = {
   // 广播获奖者
   wx_winner_tips: async function() {
     var me = this;
+    // 找到获奖者信息
     var data_winner = await Conf.findOne({
         key: 'wx_winner'
       })
       .exec();
 
-    // 下次支线任务
-
+    // 当前支线任务数据
     var data_level = await Conf.findOne({
       key: "level"
     }).exec();
-
     var data_pay = await Conf.findOne({
       key: "pay"
     }).exec();
@@ -338,17 +337,18 @@ Baby_main.prototype = {
     // --------------------------总投票统计
     await me._count("vote");
 
-    // 读取
+    // ------------------------------------支线任务读取
+    // 总票数
     var vote_data = await Count.findOne({
       key: "vote"
     }).exec();
 
-
-    // ------------------------------------支线任务读取
+    // 预设的票数达到数
     var data_level = await Conf.findOne({
       key: "level"
     }).exec();
 
+    // 预设奖金
     var data_pay = await Conf.findOne({
       key: "pay"
     }).exec();
@@ -382,10 +382,13 @@ Baby_main.prototype = {
         pay: data_pay.val,
       }
     }
+
+
     // -------------------------------------用户正常投票
     return {
-      ret: 0
-    }
+      ret: 0,
+      vote: (baby_data.vote + 1)
+    };
   },
   // -----------------------------------------搜索
   _search: async function(obj) {

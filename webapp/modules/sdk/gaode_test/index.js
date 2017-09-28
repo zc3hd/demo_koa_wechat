@@ -162,9 +162,9 @@
     map_init: function() {
       var me = this;
       me.map_Baner();
-      setTimeout(function() {
+      me.map.on('complete',function  (argument) {
         me.map_event();
-      }, 500);
+      });
     },
     // 初始化地图
     map_Baner: function() {
@@ -174,6 +174,7 @@
         zoom: 12,
         mapStyle: me.conf.style
       });
+      
     },
     // 地图的事件
     map_event: function() {
@@ -231,10 +232,7 @@
     // 定位成功
     _sn_loc_complete: function(data) {
       var me = this;
-      // cons({
-      //   str: 1,
-      //   data: data
-      // });
+      
       if (me.pt == null) {
         // cons(data.position);
         me.pt = new AMap.Marker({
@@ -243,8 +241,10 @@
         });
         me._sn_label(me.pt, data);
         me.pt.setMap(me.map);
-      } else {
-        me.pt.setPosition(new AMap.LngLa(data.position.lng, data.position.lat));
+      } 
+      // 
+      else {
+        me.pt.setPosition(new AMap.LngLat(data.position.lng, data.position.lat));
       }
       // 最优视角
       me.map.setFitView([me.pt]);

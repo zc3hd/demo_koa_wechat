@@ -1,4 +1,13 @@
 var API = {
+  // 访问量
+  views:function(obj) {
+    return $.ajax({
+      url: "/api/baby/views",
+      dataType: "json",
+      type: "POST",
+      // data: obj
+    })
+  },
   // 统计数据
   hot: function(obj) {
     return $.ajax({

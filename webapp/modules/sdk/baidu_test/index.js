@@ -19,7 +19,7 @@
       var me = this;
       me.no_scroll();
       me.top();
-      me.sdk_init();
+      // me.sdk_init();
       me.map_init();
     },
     // 禁止页面滚动

@@ -14,14 +14,20 @@ router.post('/hot_count', async function(ctx, next) {
   ctx.body = data;
 });
 
+// ----------------------------------------------访问统计
+router.post('/views', async function(ctx, next) {
+  // 访客数据
+  await new Baby()._count("views");
+  ctx.body = {
+    ret: 1
+  };
+});
 
 
 
 
 // ----------------------------------------------新增微信用户
 router.post('/add_wx_user', async function(ctx, next) {
-  // 访客数据
-  await new Baby()._count("views");
   // console.log(ctx.request.body);
   var data = await new Baby().add_wx_one(ctx.request.body);
   ctx.body = data;
@@ -30,14 +36,14 @@ router.post('/add_wx_user', async function(ctx, next) {
 // -----------------------------------------------支线信息提交
 router.post('/wx_winner', async function(ctx, next) {
   var data = await new Baby().wx_winner(ctx.request.body);
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
 // -----------------------------------------------支线信息提交
 router.post('/wx_winner_tips', async function(ctx, next) {
   var data = await new Baby().wx_winner_tips();
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
@@ -53,34 +59,34 @@ router.post('/add_baby', async function(ctx, next) {
   var data = await new Baby()._upload_to_server(ctx.req);
   // 本地数据库新增
   var echo = await new Baby()._save(data);
-  ctx.body =  echo;
+  ctx.body = echo;
 });
 
 
 // -----------------------------------------------宝宝列表
 router.post('/list', async function(ctx, next) {
   var data = await new Baby()._list(ctx.request.body);
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 // -----------------------------------------------宝宝排名
 router.post('/level_list', async function(ctx, next) {
   var data = await new Baby()._level_list();
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
 // -----------------------------------------------添加投票
 router.post('/vote', async function(ctx, next) {
   var data = await new Baby()._vote(ctx.request.body);
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
 // -----------------------------------------------搜索
 router.post('/search', async function(ctx, next) {
   var data = await new Baby()._search(ctx.request.body);
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
@@ -89,7 +95,7 @@ router.post('/search', async function(ctx, next) {
 // -----------------------------------------------活动信息
 router.post('/info', async function(ctx, next) {
   var data = await new Baby()._info();
-  ctx.body =  data;
+  ctx.body = data;
 });
 
 
