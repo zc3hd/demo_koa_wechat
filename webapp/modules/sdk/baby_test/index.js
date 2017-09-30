@@ -159,6 +159,7 @@
     _load: function() {
       return layer.load(0, { shade: 0.5 });
     },
+    // 事件完成后的所加载的事件
     _event_done: function(argument) {
       var me = this;
       // 加载
@@ -177,11 +178,9 @@
       }
       // 商家入口
       else if (me.key == 'reg') {
-
         me._reg(layer_load);
       }
     },
-
     // ------------------------------------------------导航
     // nav
     _nav: function(key) {
@@ -441,8 +440,17 @@
         });
         return;
       }
-      if (baby_img.name.split('.').length != 2) {
-        layer.tips('照片名字不能含有 . 哦~~', '#baby_img', {
+      var imgs = baby_img.name.split('.');
+      // 名字中间不能有点
+      if (imgs.length != 2) {
+        layer.tips('照片名字不能含有[.]哦~~', '#baby_img', {
+          tips: 1
+        });
+        return;
+      }
+      // 文件类型确认
+      if ((imgs[1].toLowerCase() != 'jpg') && (imgs[1].toLowerCase() != 'png')) {
+        layer.tips('照片类型必须为jpg、png', '#baby_img', {
           tips: 1
         });
         return;
@@ -526,7 +534,6 @@
             me.main_list_key = true;
           });
       }
-
     },
     // 列表绘制
     _mian_list_draw: function(arr, layer_load) {
@@ -955,72 +962,152 @@
     _reg: function(layer_load) {
       var me = this;
       layer.close(layer_load);
+      // 时间加载
+      me._date(['#business_beginTime'])
+
       // 其他合作方式
       me._reg_other();
 
+      // 顶部合作
       me._reg_top();
+
+      // 
+      me._baby_talk();
+    },
+    // 日期加载
+    _date: function(arr) {
+      var me = this;
+
+      // 开始时间
+      var start = {
+        //需显示日期的元素选择器
+        elem: arr[0],
+        event: 'click', //触发事件
+        // format: 'YYYY-MM-DD hh:mm:ss', //日期格式
+        format: 'YYYY-MM-DD', //日期格式
+        istime: false, //是否开启时间选择
+        isclear: true, //是否显示清空
+        istoday: false, //是否显示今天
+        issure: true, //是否显示确认
+        //是否显示节日
+        festival: true,
+        //最小日期
+        min: laydate.now(),
+        //最大日期
+        max: '2099-12-31 23:59:59',
+        // max: laydate.now(), //设定最大日期为当前日期
+        //开始日期
+        start: laydate.now(),
+        fixed: false, //是否固定在可视区域
+        zIndex: 99999999, //css z-index
+        choose: function(dates) { //选择好日期的回调
+          //var  time = dates.replace(new RegExp("-","gm"),"/");
+
+          var time = dates.split('-').join('\/');
+
+          var time_hm = (new Date(time)).getTime(); //得到毫秒数
+
+          me.beginTime = time_hm;
+
+          // 开始日选好后，重置结束日的最小日期
+          // end.min = dates;
+          //将结束日的初始值设定为开始日
+          // end.start = dates;
+        }
+      };
+
+
+      $(arr[0]).off().on('click', function(argument) {
+        laydate(start);
+      });
+
+      // var end = {
+      //   elem: arr[1], //需显示日期的元素选择器
+      //   event: 'click', //触发事件
+      //   format: 'YYYY-MM-DD', //日期格式
+      //   istime: false, //是否开启时间选择
+      //   isclear: true, //是否显示清空
+      //   istoday: false, //是否显示今天
+      //   issure: true, //是否显示确认
+      //   festival: true, //是否显示节日
+      //   // min: '1900-01-01 00:00:00', //最小日期 max: '2099-12-31 23:59:59', //最大日期 
+      //   //start: '2014-6-15 23:00:00',  //开始日期
+      //   max: laydate.now(), //设定最大日期为当前日期
+      //   fixed: false, //是否固定在可视区域
+      //   zIndex: 99999999, //css z-index
+      //   choose: function(dates) { //选择好日期的回调
+      //     //var  time = dates.replace(new RegExp("-","gm"),"/");
+      //     var time = dates.split('-').join('\/');
+      //     var time_hm = (new Date(time)).getTime(); //得到毫秒数
+
+      //     me.endTime = time_hm;
+      //     //结束日选好后，重置开始日的最大日期
+      //     start.max = dates;
+      //   }
+      // };
+      // $(arr[1]).click(function() {
+      //   laydate(end);
+      // });
     },
     // 其他合作方式
     _reg_other: function() {
       var me = this;
       $('#other_teamwork').off().on('click', function(argument) {
-        var str = `
-        <div class="other_teamwork">
-          <img src="./img/admin.jpg" style="width:90%;height:auto" />
-        </div>
-        `;
-        layer.open({
-          offset: '35px',
-          title: "长按二维码找到管理员",
-          area: ['90%', '442px'],
-          shade: 0.6,
-          closeBtn: 2,
-          anim: 2,
-          content: str,
-          success: function(layero, index) {},
-          btn: ['关闭'],
-          yes: function(index, layero) {
-            layer.close(index);
-          }
-        });
+        $('.info_label').hide();
+        $('#other_teamwork_info').show(100);
       });
     },
     // 顶部实时广告
     _reg_top: function() {
       var me = this;
-      var str = `
-      <div id="add_baby">
-        <div>
-          <div>商家名称</div>
-          <input type="text" placeholder="字数不超过10个字" id="business_name">
-        </div>
-        <div>
-          <div>商家活动</div>
-          <input type="text" placeholder="字数不超过200个字" id="business_activity">
-        </div>
-      </div>
-      `;
+      $('#top_teamwork').off().on('click', function(argument) {
+        $('.info_label').hide();
+        $('#top_adv_info').show(100);
+      });
+      me._reg_top_done();
+    },
+    _reg_top_done: function() {
+      var me = this;
+      var business_name = $('#business_name').val();
+      var business_activity = $('#business_activity').val();
 
-      $('#top_teamwork')
-        .off()
-        .on('click', function(argument) {
-          layer.open({
-            offset: '35px',
-            title: '宝宝报名',
-            area: ['90%', '368px'],
-            shade: 0.6,
-            closeBtn: 2,
-            anim: 2,
-            content: str,
-            success: function(layero, index) {},
-            btn: ['报名'],
-            yes: function(index, layero) {
-              me._add_yes(index);
-            }
-          });
+      if (!business_name) {
+        layer.tips('请输入商家名称', '#business_name', {
+          tips: 1
         });
+        return;
+      }
+      if (business_name.length>10) {
+        layer.tips('商家名称保持在10字以内', '#business_name', {
+          tips: 1
+        });
+        return;
+      }
+      if (!business_activity) {
+        layer.tips('请输入商家活动', '#business_activity', {
+          tips: 1
+        });
+        return;
+      }
+      if (business_activity.length>200) {
+        layer.tips('商家活动保持在200字以内', '#business_activity', {
+          tips: 1
+        });
+        return;
+      }
+      var business_days = $('#business_days').val();
 
     },
+    // 宝宝寄语
+    _baby_talk: function() {
+      var me = this;
+
+      $('#to_baby_talk').off().on('click', function(argument) {
+        $('.info_label').hide();
+        $('#to_baby_talk_info').show(100);
+      });
+    },
+
 
   };
   conf.module["Main_html"] = Main_html;
