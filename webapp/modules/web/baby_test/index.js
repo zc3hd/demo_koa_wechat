@@ -29,9 +29,22 @@
       // 获得者提醒
       me._winner_tips();
 
-      // nav
-      me._nav('main');
+      // 获取过期时间
+      me._time_end(function(){
+        // nav
+        me._nav('main');
+      });
 
+    },
+    // 获取过期时间
+    _time_end:function(cb){
+      var me = this;
+      API.time_end()
+        .done(function(data){
+          // 过期时间
+          me.expires_in = data.expires_in;
+          cb();
+        });
     },
     // 访问量计算
     _views: function() {
@@ -123,9 +136,9 @@
     // 广告
     _adv: function(obj) {
       var me = this;
-      // 
+      // 父级的宽度
       var parent_w = $(obj.parent).width();
-      // 
+      // 儿子的宽度
       var son_w = $(obj.son).width();
       var son_left = $(obj.son).css('left');
       var arr = son_left.split("px");
@@ -149,9 +162,14 @@
         // 重置
         $(obj.son).css('transition', `left 0.01s linear`);
 
-        $(obj.son).css('left', `${parent_w+10}px`);
-
-        me._adv(obj);
+        // 推迟执行
+        setTimeout(function(){
+          $(obj.son).css('left', `${parent_w+10}px`);
+        },200);
+        
+        setTimeout(function(){
+          me._adv(obj);
+        },1000);
       }, n * 13 * 1000);
     },
     // ---------------------------------------------事件完成后的函数
@@ -226,7 +244,6 @@
         }
         // 商家入口
         else if (key == 'reg') {
-
           me._reg(layer_load);
         }
       });
@@ -241,7 +258,7 @@
       me._wx_user(function() {
         // 统计数据
         me._hot();
-        // 可以添加宝宝了
+        // 可以添加宝宝了（或者是宝宝的数据）
         me._add();
 
         layer.close(load_add);
@@ -317,51 +334,31 @@
         // 具体信息隐藏
         $('#app>.main>.wx_baby').hide();
 
-        var str = `
-        <div id="add_baby">
-          <div>
-            <div>宝宝姓名</div>
-            <input type="text" placeholder="字数不超过6个字" id="baby_name">
-          </div>
-          <div>
-            <div>家长姓名</div>
-            <input type="text" placeholder="请输入家长姓名" id="p_name">
-          </div>
-          <div>
-            <div>联系电话</div>
-            <input type="text" placeholder="请输入联系电话" id="p_phone">
-          </div>
-          <div>
-            <div>上传照片</div>
-            <input type="file" id="baby_img">
-          </div>
-          <div class="info">
-            上传图片大小不允超过1M</br>
-            以上全部为必输入项
-          </div>
-        </div>
-        `;
+
+        // 报名入口点击事件
         $('#apply').off().on('click', function() {
-          layer.open({
-            offset: '35px',
-            title: '宝宝报名',
-            area: ['90%', '368px'],
-            shade: 0.6,
-            closeBtn: 2,
-            anim: 2,
-            content: str,
-            success: function(layero, index) {},
-            btn: ['报名'],
-            yes: function(index, layero) {
-              me._add_yes(index);
-            }
-          });
+          // 过期
+          if (new Date().getTime()>me.expires_in) {
+            layer.msg('活动日期已经截止咯~~');
+          }
+          // 没有过期
+          else{
+            // 具体信息显示
+            $('#app>.main>.add_bb_input').show(200);
+            // 提交信息按钮
+            $('#btn_add_bb').off().on('click',function(){
+              // 提交信息事件
+              me._add_yes();
+            });
+          }
         });
       }
       // ---------------------------已经报名
       else {
+        // 取消报名事件
+        $('#apply').off();
         // 标题
-        $('#apply_title').html(`${me.wx_baby.baby_id}号 ${me.wx_baby.baby_name}`);
+        $('#apply_title').html(`您家宝宝 ${me.wx_baby.baby_id}号 ${me.wx_baby.baby_name}`);
 
         // 具体信息显示
         $('#app>.main>.wx_baby').show();
@@ -377,17 +374,17 @@
 
         // 单独投票行为
         me._vote_yes();
-
       }
     },
     // 没有报名的--确认添加
-    _add_yes: function(index) {
+    _add_yes: function() {
       var me = this;
 
       var baby_name = $('#baby_name').val();
       var p_name = $('#p_name').val();
       var p_phone = $('#p_phone').val();
       var baby_img = $('#baby_img')[0].files[0];
+
       // ---------------------------------------------
       if (!baby_name) {
         layer.tips('宝宝姓名必须填哦', '#baby_name', {
@@ -395,6 +392,7 @@
         });
         return;
       }
+
       if (baby_name.length > 6) {
         layer.tips('宝宝名字太长咯', '#baby_name', {
           tips: 1
@@ -421,7 +419,7 @@
         });
         return;
       }
-      if (p_phone.length > 11) {
+      if (p_phone.length != 11) {
         layer.tips('手机号不对哦', '#p_phone', {
           tips: 1
         });
@@ -440,6 +438,7 @@
         });
         return;
       }
+      // cons(baby_img);
       var imgs = baby_img.name.split('.');
       // 名字中间不能有点
       if (imgs.length != 2) {
@@ -449,13 +448,15 @@
         return;
       }
       // 文件类型确认
-      if ((imgs[1].toLowerCase() != 'jpg') && (imgs[1].toLowerCase() != 'png')) {
-        layer.tips('照片类型必须为jpg、png', '#baby_img', {
+      if ((imgs[1].toLowerCase() == 'jpg') || (imgs[1].toLowerCase() == 'png')||(imgs[1].toLowerCase() == 'jpeg')) {
+        
+      }
+      else{
+        layer.tips('照片类型必须为jpg、jpeg、png', '#baby_img', {
           tips: 1
         });
         return;
       }
-
 
       // ---------------------------------------------
       var obj = {
@@ -476,16 +477,24 @@
       me.layer_load = me._load();
       API.add_baby(formData)
         .done(function(data) {
+          // 报名成功
           if (data._id) {
 
             layer.msg('宝宝报名成功');
-            layer.close(index);
+            // 报名窗口隐藏
+            $('#add_bb_input').hide(50);
 
             // 关闭加载层
             layer.close(me.layer_load);
 
             // 事件完成后的函数
             me._event_done();
+          }
+          // 报名失败
+          else if (data.ret==-1) {
+            layer.msg('已经超过报名的时间了');
+            // 关闭加载层
+            layer.close(me.layer_load);
           }
         });
     },
@@ -626,6 +635,7 @@
     _list_vote_event: function() {
       var me = this;
       var baby_id = null;
+      // 列表中的投票按钮
       $('#device').off().on('click', '.click_vote', function(e) {
         // 拿到babyid
         baby_id = $(e.currentTarget).attr('key');
@@ -639,34 +649,39 @@
     // 投票行为ajax
     _vote_event_ajax: function(baby_id) {
       var me = this;
+      // 过期
+      if (new Date().getTime()>me.expires_in) {
+        layer.msg('投票已经截止咯~~');
+      }
+      // 没有过期
+      else{
+        me.layer_load = me._load();
+        API.vote({
+            baby_id: baby_id,
+            wx_user_id: me.wx_user_id
+          })
+          .done(function(data) {
+            layer.close(me.layer_load);
+            // 正常投票
+            if (data.ret == 0) {
+              layer.msg('投票成功');
 
-      me.layer_load = me._load();
-      API.vote({
-          baby_id: baby_id,
-          wx_user_id: me.wx_user_id
-        })
-        .done(function(data) {
-          layer.close(me.layer_load);
-          if (data.ret == 0) {
+              // 事件完成后的函数
+              me._event_done();
 
-
-            layer.msg('投票成功');
-
-            // 事件完成后的函数
-            me._event_done();
-
-            // 投票完成后直接修改列表的数据
-            me._vote_done_list(data.vote)
-          }
-          // 超过上限
-          else if (data.ret == -1) {
-            layer.msg('你捏今天的投票次数用完咯，请明儿再闹哇~~');
-          }
-          // 中奖
-          else {
-            me._vote_winner_one(data);
-          }
-        })
+              // 投票完成后直接修改列表的数据
+              me._vote_done_list(data.vote)
+            }
+            // 超过微信用户的投票上限
+            else if (data.ret == -1) {
+              layer.msg('你捏今天的投票次数用完咯，请明儿再闹哇~~');
+            }
+            // 微信用户中奖的显示
+            else {
+              me._vote_winner_one(data);
+            }
+          });
+      }
     },
     // 支线任务截图一
     _vote_winner_one: function(data) {
@@ -683,8 +698,8 @@
 
       layer.open({
         offset: '35px',
-        title: '恭喜恭喜，晚上吃鸡',
-        area: ['90%', '295px'],
+        title: '大吉大利，晚上吃鸡',
+        area: ['90%', '285px'],
         shade: 0.6,
         closeBtn: 2,
         anim: 2,
@@ -700,33 +715,11 @@
     // 支线任务截图2
     _vote_winner_two: function(echo) {
       var me = this;
-      var str = `
-      <div id="winner">
-        <div class="title">
-          【记住以下两步骤，该页面关闭后不再显示】</br>
-          1、把刚才截图发到朋友圈;</br>
-          2、加管理员微信后，验证后可领取奖励;</br>
-          <img src="./img/admin.jpg" style="width:65%;height:auto" /></br>
-        </div>
-        <input type="text" placeholder="请输入联系电话" id="winner_phone">
-        <input type="text" placeholder="请输入昵称以进行全站广播" id="winner_name">
-      </div>
-      `;
-
-      layer.open({
-        offset: '35px',
-        title: '恭喜恭喜，晚上吃鸡',
-        area: ['90%', '510px'],
-        shade: 0.6,
-        closeBtn: 2,
-        anim: 2,
-        content: str,
-        success: function(layero, index) {},
-        btn: ['我记住了'],
-        yes: function(index, layero) {
-          // layer.close(index);
-          me._vote_winner_done(index, echo);
-        }
+      // 获得者信息收集的窗口
+      $('#winner_ipt').show(200);
+      // 提交信息
+      $('#winner_btn').off().on('click',function(){
+        me._vote_winner_done(me._load(), echo);
       });
     },
     // 截图完成
@@ -737,12 +730,14 @@
         layer.tips('昵称太长咯', '#winner_name', {
           tips: 1
         });
+        layer.close(index);
         return;
       }
-      if ($('#winner_phone').val().length > 11) {
-        layer.tips('手机号太长了', '#winner_phone', {
+      if ($('#winner_phone').val().length != 11) {
+        layer.tips('您输入的不是11位的电话号码哦~', '#winner_phone', {
           tips: 1
         });
+        layer.close(index);
         return;
       }
 
@@ -755,6 +750,8 @@
         .done(function(data) {
           if (data.ret == 1) {
             layer.close(index);
+            // 收集框消失
+            $('#winner_ipt').hide(200);
             // 事件完成后的函数
             me._event_done();
           }
@@ -781,12 +778,12 @@
       API.search({
         baby_id: baby_id
       }).done(function(data) {
+        console.log(data);
         if (data.ret == -1) {
           $('#search_num').val("");
           layer.tips('未搜索到您输入的编号~~', '#search_num', {
             tips: 1
           });
-          return;
         }
         // 找到宝宝
         else {
@@ -871,7 +868,7 @@
           </div>
           <div class="info">
             <div>${arr[k].baby_id}号 ${arr[k].baby_name}</div>
-            <div>${arr[k].vote}</div>
+            <div>${arr[k].vote} 票</div>
           </div>
         </div>
         `;
@@ -928,7 +925,15 @@
       API.info()
         .done(function(data) {
           var start = common_fn.formatterDateDay(data.start, true);
-          var end = common_fn.formatterDateDay(data.end, true);
+
+          // 0
+          var end = "";
+          if (!data.end) {
+            notice = "待定";
+          } else {
+            end = common_fn.formatterDateDay(data.end, true);
+          }
+          
           $('#doing').html(`活动时间：${start} 至 ${end}`);
 
           // 0
@@ -1064,7 +1069,7 @@
         $('.info_label').hide();
         $('#top_adv_info').show(100);
       });
-      me._reg_top_done();
+      // me._reg_top_done();
     },
     _reg_top_done: function() {
       var me = this;
@@ -1096,7 +1101,6 @@
         return;
       }
       var business_days = $('#business_days').val();
-
     },
     // 宝宝寄语
     _baby_talk: function() {
@@ -1107,8 +1111,6 @@
         $('#to_baby_talk_info').show(100);
       });
     },
-
-
   };
   conf.module["Main_html"] = Main_html;
 })(jQuery, window);

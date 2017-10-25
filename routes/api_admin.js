@@ -1,3 +1,6 @@
+/*
+* 此项API是管理素材的admin的api
+ */
 const fs = require('fs')
 const path = require('path');
 const Busboy = require('busboy');
@@ -65,8 +68,6 @@ router.post('/admin/upd_news', async function(ctx, next) {
   ctx.body = { ret: 1 };
 });
 
-
-// --------------------------------------------------------baby
 
 
 

@@ -20,13 +20,13 @@ var conf = {
 
 // ---------------------------数据库
 // 微信用户
-var WxUser = require('../mongo/project_models/WxUser.js');
+var WxUser = require('../mongo/baby_models/WxUser.js');
 // baby
-var Baby = require('../mongo/project_models/Baby.js');
+var Baby = require('../mongo/baby_models/Baby.js');
 // 统计
-var Count = require('../mongo/project_models/Count.js');
+var Count = require('../mongo/baby_models/Count.js');
 // 配置
-var Conf = require('../mongo/project_models/Conf.js');
+var Conf = require('../mongo/baby_models/Conf.js');
 
 
 
@@ -117,7 +117,6 @@ Baby_main.prototype = {
         level: level
       };
     }
-
   },
   // 查找微信用户
   find_wx_one: async function(val) {
@@ -185,6 +184,14 @@ Baby_main.prototype = {
     }
   },
   // ----------------------------------------报名
+  // 到期时间获取
+  _time_end:async function(){
+    var me = this;
+    // 到期时间
+    return await Conf.findOne({
+      key: "end"
+    }).exec();
+  },
   // 上传到本地文件
   _upload_to_server: async function(req) {
     var me = this;
@@ -196,19 +203,24 @@ Baby_main.prototype = {
     var obj = {};
     // 传过来 fieldname--字段名  val--传过来的值
     _emmiter.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-      // console.log('Field [' + fieldname + ']: value: ' + val);
       // 挂载数据
       obj[fieldname] = val;
     });
     // 要保存的地址
     var test_path = conf.path;
     return new Promise((resolve, reject) => {
-
+      // 接受上传的文件
       _emmiter.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        // 空格后变成的数组
+        var _arr_trim = filename.split(' ');
+        // 空格变成下划线
+        filename = _arr_trim.join('_');
+
+        // ----------------------------------重组文件名
         var arr = filename.split('.');
         // 随机数1
         var random = Math.floor(Math.random() * 100000);
-        // 随机数2
+        // 时间戳2
         var timestamp = new Date().getTime();
 
         var file_name = `${arr[0]}_${random}_${timestamp}.${arr[1]}`;
@@ -296,11 +308,10 @@ Baby_main.prototype = {
     var me = this;
     // var baby_id = obj.baby_id;
 
+    // 投票用户的数据查询
     var wx_data = await WxUser.findOne({
       val: obj.wx_user_id
     }).exec();
-
-
 
     // ------------------微信用户投票等于10
     if (wx_data.baby_vote >= 10) {
@@ -334,6 +345,8 @@ Baby_main.prototype = {
         }
       })
       .exec();
+
+
     // --------------------------总投票统计
     await me._count("vote");
 
@@ -355,7 +368,7 @@ Baby_main.prototype = {
 
     // 预设的获得者达到要求
     if (vote_data.val == data_level.val) {
-      // 根变数据
+      // 根变下次中奖位数
       await Conf.update({
           key: "level"
         }, {
@@ -366,7 +379,7 @@ Baby_main.prototype = {
         .exec();
 
 
-      // 根变数据
+      // 根变下次奖金的数额
       await Conf.update({
           key: "pay"
         }, {

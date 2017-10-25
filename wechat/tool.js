@@ -28,19 +28,11 @@ exports.parseUrl = function(url) {
   });
   return obj
 };
-
-
-
 // --------------------------------------------------数据加密
 exports.sha = function(obj) {
   var str = [obj.token, obj.timestamp, obj.nonce].sort().join('');
   return sha1(str);
 };
-
-
-
-
-
 // --------------------------------------------------xml转化为对象
 exports.xml2js = function(xml) {
   return new Promise(function(resolve, reject) {
@@ -51,11 +43,6 @@ exports.xml2js = function(xml) {
     });
   });
 };
-
-
-
-
-
 // --------------------------------------------------格式化对象
 function format_data(obj) {
   var msg = null;
@@ -84,12 +71,6 @@ function format_data(obj) {
   return msg;
 };
 exports.format_data = format_data;
-
-
-
-
-
-
 // --------------------------------------------------素材的处理
 // 对于素材的操作增删改查
 function Material() {}
@@ -305,7 +286,7 @@ Material.prototype = {
   _local_sdk_save: function(data) {
     var me = this;
     var val = null;
-    // 文本
+    // 文本-
     if (data.MsgType == 'text') {
       val = JSON.stringify({
         MsgType: data.MsgType,
@@ -341,55 +322,48 @@ Material.prototype = {
     }
     // 删除临时文件
     else {
-      return fs.remove(path.join(conf.temporary.path, data.key))
-        .then(function() {
-          return Data.remove({
-            key: data.key,
-          })
+      return fs.remove(path.join(conf.temporary.path, data.key)).then(function() {
+        return Data.remove({
+          key: data.key,
         })
-        .then();
+      }).then();
     }
-
   },
   // --------------------------------------------------更新
   _upd_news: function(data) {
     var me = this;
     return Data.update({
-        _id: data._id
-      }, {
-        $set: {
-          key: data.key,
-          val: JSON.stringify({
-            MsgType: data.MsgType,
-            Articles: [{
-              Title: data.Title,
-              Description: data.Description,
-              PicUrl: data.PicUrl,
-              Url: data.Url
-            }]
-          })
-        }
-      })
-      .exec();
+      _id: data._id
+    }, {
+      $set: {
+        key: data.key,
+        val: JSON.stringify({
+          MsgType: data.MsgType,
+          Articles: [{
+            Title: data.Title,
+            Description: data.Description,
+            PicUrl: data.PicUrl,
+            Url: data.Url
+          }]
+        })
+      }
+    }).exec();
   },
 };
 exports.Material = Material;
-
-
-
-
-
-
 // --------------------------------------------------回复数据的处理
+// url_come, obj, FromUserName----请求的地址，查询的数据库的对象，来自哪个用户
 var echo_handle = async function(url_come, obj, FromUserName) {
   var koa_url_come = conf.wx.http + url_come;
   // 没有查询的数据
   if (obj == null) {
+    // 默认自动回复 1 的 设置
     var new_obj = await Data.findOne({
       key: "1"
     }).exec();
     return JSON.parse(new_obj.val);
   }
+  // 查询出来的对象
   var val = JSON.parse(obj.val);
   // ------------------------------本地预设数据
   if (obj.category == 'local') {
@@ -402,14 +376,19 @@ var echo_handle = async function(url_come, obj, FromUserName) {
     // 图文列表
     var articles = val.Articles;
     articles.forEach(function(item, index) {
-      // admin--拼接用户的ID
-      if (conf.wx.admin_key.indexOf(obj.key) != -1) {
-        item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
-      }
-      // 其他sdk
-      else {
-        item.Url = url_arr[0] + item.Url + '?' + url_arr[1];
-      }
+      // 拼接用户名
+      item.Url = url_arr[0] + item.Url + '?' + url_arr[1] + '&FromUserName=' + FromUserName;
+    });
+    return val;
+  }
+  // ------------------------------web
+  else if (obj.category == 'web') {
+    // 用户回复的信息的默认路径
+    var url_arr = koa_url_come.split('?');
+    // 图文列表
+    var articles = val.Articles;
+    articles.forEach(function(item, index) {
+      item.Url = url_arr[0] + item.Url + '?FromUserName=' + FromUserName;
     });
     return val;
   }
@@ -422,6 +401,7 @@ var echo_handle = async function(url_come, obj, FromUserName) {
   //   return val;
   // }
 };
+// koa_url_come--请求的地址
 exports.data_to_echo = async function(koa_url_come, data) {
   // 预回复数据初始化
   var echo = {
@@ -437,10 +417,10 @@ exports.data_to_echo = async function(koa_url_come, data) {
   //   val: 1,
   //   category: 1
   // }
+  // 
   var obj = await Data.findOne({
     key: key
   }).exec();
-
   // 返回处理后的对象--me是外面访问的对象
   var val = await echo_handle(koa_url_come, obj, data.FromUserName);
   // 挂载对象
@@ -450,12 +430,6 @@ exports.data_to_echo = async function(koa_url_come, data) {
   echo.CreateTime = new Date().getTime();
   return echo;
 };
-
-
-
-
-
-
 // --------------------------------------------------回复的模板
 exports.tpl = function(data) {
   // 头部
@@ -535,11 +509,6 @@ exports.tpl = function(data) {
   var footer = '</xml>';
   return `${header}${body}${footer}`
 };
-
-
-
-
-
 // --------------------------------------------------SDK验证
 exports.signature = async function(url) {
   await new Token().ticket_reload();
@@ -556,9 +525,6 @@ exports.signature = async function(url) {
     appId: conf.wx.appID
   }
 };
-
-
-
 // --------------------------------------------------管理员的操作
 function Admin() {}
 Admin.prototype = {

@@ -1,12 +1,18 @@
+/*
+* 此项API是萌宝大赛的所有的api
+ */
 const fs = require('fs')
 const path = require('path');
 const Busboy = require('busboy');
+// 控制器
 const Baby = require('../contollers/controller_baby.js');
+// 路由
 const router = require('koa-router')();
 
 
-
+// 项目前缀
 router.prefix('/api/baby');
+
 // ----------------------------------------------统计数据显示
 router.post('/hot_count', async function(ctx, next) {
   // console.log(ctx.request.body);
@@ -40,7 +46,7 @@ router.post('/wx_winner', async function(ctx, next) {
 });
 
 
-// -----------------------------------------------支线信息提交
+// -----------------------------------------------广播获奖者
 router.post('/wx_winner_tips', async function(ctx, next) {
   var data = await new Baby().wx_winner_tips();
   ctx.body = data;
@@ -48,17 +54,41 @@ router.post('/wx_winner_tips', async function(ctx, next) {
 
 
 
+// -----------------------------------------------返回到期的时间
+router.post('/time_end', async function(ctx, next) {
+  // 获取到期时间
+  var time_end = await new Baby()._time_end();
 
+  // 返回到期的时间
+  ctx.body = {
+    expires_in:time_end.expires_in,
+  };
+});
 
 
 // -----------------------------------------------添加宝宝
 router.post('/add_baby', async function(ctx, next) {
+  // 获取到期时间
+  var time_end = await new Baby()._time_end();
+
+  // 获取现在的时间
+  var time_now = new Date().getTime();
+
+  // 超过报名时间
+  if (time_now>time_end.expires_in) {
+    ctx.body = {
+      ret:-1
+    };
+    return;
+  }
+
   // 报名数据
   await new Baby()._count("num");
   // 上传到本地文件夹
   var data = await new Baby()._upload_to_server(ctx.req);
   // 本地数据库新增
   var echo = await new Baby()._save(data);
+  // 回复报名的数据
   ctx.body = echo;
 });
 
@@ -98,42 +128,6 @@ router.post('/info', async function(ctx, next) {
   ctx.body = data;
 });
 
-
-
-
-
-// // PC端登
-// router.post('/admin/pc_login', async function(ctx, next) {
-//   // console.log(ctx.request.body);
-//   
-//   ctx.body = data;
-// });
-
-
-// // pc素材list
-// router.post('/admin/material/list', async function(ctx, next) {
-//   var data = await new tool.Material().list(ctx.request.body);
-//   ctx.body = data;
-// });
-
-// // pc 添加文本 和 news
-// router.post('/admin/material/add_text_news', async function(ctx, next) {
-//   // 添加 本地预设 或者 sdk
-//   new tool.Material()._local_sdk_save(ctx.request.body);
-//   ctx.body = { ret: 1 };
-// });
-// // pc 删除 素材
-// router.post('/admin/del_material', async function(ctx, next) {
-//   await new tool.Material()._del(ctx.request.body);
-//   ctx.body = { ret: 1 };
-// });
-
-// // pc news 更新
-// router.post('/admin/upd_news', async function(ctx, next) {
-//   // console.log(ctx.request.body);
-//   await new tool.Material()._upd_news(ctx.request.body);
-//   ctx.body = { ret: 1 };
-// });
 
 
 

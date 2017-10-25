@@ -76,6 +76,6 @@ router.post('/', async function(ctx, next) {
     ctx.body = tool.tpl(echo);
     // next();
   }
-})
+});
 
 module.exports = router;

@@ -82,6 +82,7 @@
               <option value='local'>本地</option>
               <option value='temp'>临时</option>
               <option value='sdk'>SDK</option>
+              <option value='web'>web</option>
             </select>
           </div>
         </div>
@@ -256,7 +257,21 @@
           // 
           $('#material>.text').hide(100);
           $('#material>.news').show(100);
-          // 默认选择是text
+          // 默认选择是news
+          me._MsgType = "news";
+        }
+        // web
+        else if (category == 'web') {
+          // 类型--没有了
+          $('#material>.MsgType').hide(100);
+          // 输入区--默认图文
+          $('#material>.voice').hide(100);
+          $('#material>.video').hide(100);
+          $('#material>.image').hide(100);
+          // 
+          $('#material>.text').hide(100);
+          $('#material>.news').show(100);
+          // news
           me._MsgType = "news";
         }
       });
@@ -414,7 +429,14 @@
       }
       // 本地预设 文本或静态图文 或SDK
       else {
-        return me.API.add_text_news(formData);
+        var load = layer.load();
+        return me.API.add_text_news(formData)
+        .done(function(data){
+          if (data.ret) {
+          layer.close(load);
+          me.list.datagrid('reload');
+          }
+        });
       }
     },
     // 删除素材

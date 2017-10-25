@@ -17,6 +17,15 @@ var API = {
       // data: obj
     })
   },
+  // 截止时间获取
+  time_end: function(obj) {
+    return $.ajax({
+      url: "/api/baby/time_end",
+      dataType: "json",
+      type: "POST",
+      // data: obj
+    })
+  },
   // -------------------------------------------------------
   // 收集微信用户
   wx_user: function(obj) {

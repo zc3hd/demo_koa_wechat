@@ -34,11 +34,13 @@ var wx = require('./routes/wx.js');
 app.use(wx.routes(), wx.allowedMethods());
 
 // ------------------------------------------api
-var api = require('./routes/api.js');
-app.use(api.routes(), api.allowedMethods());
+// 前缀-- /api
+var api_admin = require('./routes/api_admin.js');
+app.use(api_admin.routes(), api_admin.allowedMethods());
 
 
 // ------------------------------------------baby
+// 前缀-- /api/baby
 var api_baby = require('./routes/api_baby.js');
 app.use(api_baby.routes(), api_baby.allowedMethods());
 

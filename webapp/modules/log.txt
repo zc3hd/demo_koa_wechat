@@ -1,0 +1,47 @@
+***********************  local 
+local主要是可以镶嵌被人的页面，不是本地开发的，不需要拼接任何参数。
+
+
+
+
+***********************  SDK 
+用到微信提供的SDK文件，需要拼接全路径，也需要拼接上用户ID--FromUserName
+
+movie
+http://www.yongjiasoft.com/attached/image/20170224/20170224090628_1285.jpg
+modules/sdk/voice_search_moive/index.html
+
+
+
+
+***********************  web 
+自己开发的服务，需要拼接用户的ID--FromUserName
+
+baby
+http://www.100estore.com/r/gou/u/201506/131705569b23.png
+modules/web/baby_test/index.html
+
+admin
+http://www.chhua.com/wp-content/uploads/auto_save_image/2013/08/0302124RG.jpg
+modules/admin/mobile/index.html
+
+
+gd
+http://i5.hexunimg.cn/2015-09-30/179576515.jpg
+modules/sdk/gaode_test/index.html
+
+bd
+http://i5.hexunimg.cn/2015-09-30/179576515.jpg
+modules/sdk/baidu_test/index.html
+
+bike
+http://i5.hexunimg.cn/2015-09-30/179576515.jpg
+modules/sdk/bike_test/index.html
+
+
+tianz
+http://www.100estore.com/r/gou/u/201506/131705569b23.png
+modules/sdk/tz_test/index.html
+
+
+
